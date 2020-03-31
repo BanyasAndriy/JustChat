@@ -13,12 +13,11 @@ public class CustomUser {
     private String login;
     private String avatar;
     private String password;
-    @OneToMany(
-
-            cascade = CascadeType.ALL
-    )
+    @OneToMany(cascade = CascadeType.ALL)
     private List<ChatMessage> chatMessages = new LinkedList<>();
-
+    private String facebook;
+    private String twitter;
+    private String instagram;
 
     public CustomUser() {
     }
@@ -110,4 +109,28 @@ public class CustomUser {
         this.password = password;
     }
 
+
+    public String getFacebook() {
+        return facebook;
+    }
+
+    public void setFacebook(String facebook) {
+        this.facebook = facebook;
+    }
+
+    public String getTwitter() {
+        return twitter;
+    }
+
+    public void setTwitter(String twitter) {
+        this.twitter = twitter;
+    }
+
+    public String getInstagram() {
+        return instagram;
+    }
+
+    public void setInstagram(String instagram) {
+        this.instagram = instagram;
+    }
 }

@@ -720,12 +720,12 @@
                     </ul>
                 </div>
                 <div id="expanded">
-                    <label for="twitter"><i class="fa fa-facebook fa-fw" aria-hidden="true"></i></label>
-                    <input name="twitter" type="text" value="mikeross" />
-                    <label for="twitter"><i class="fa fa-twitter fa-fw" aria-hidden="true"></i></label>
-                    <input name="twitter" type="text" value="ross81" />
-                    <label for="twitter"><i class="fa fa-instagram fa-fw" aria-hidden="true"></i></label>
-                    <input name="twitter" type="text" value="mike.ross" />
+                    <label for="facebook"><i class="fa fa-facebook fa-fw" aria-hidden="true"></i></label>
+                    <input name="twitter" type="text" class="network" id="facebook" value="" placeholder="url of your facebook"  onchange="saveUrlNetwork(this.id,this.value)"/>
+                    <label for="twitter"><i class="fa fa-twitter fa-fw" aria-hidden="true" ></i></label>
+                    <input name="twitter" type="text" class="network"  id="twitter"  value=""  placeholder="url of your twitter " onchange="saveUrlNetwork(this.id,this.value)"/>
+                    <label for="instagram"><i class="fa fa-instagram fa-fw" aria-hidden="true"></i></label>
+                    <input name="twitter" type="text"   class="network"  id="instagram" value="" placeholder="url of your instagram" onchange="saveUrlNetwork(this.id , this.value)"/>
                 </div>
             </div>
         </div>
@@ -762,9 +762,9 @@
             <img id ="chat-avatar" src="" alt="" />
             <p class="chat-login">Загальний чат</p>
             <div class="social-media">
-                <i class="fa fa-facebook" aria-hidden="true"></i>
-                <i class="fa fa-twitter" aria-hidden="true"></i>
-                <i class="fa fa-instagram" aria-hidden="true"></i>
+                <i class="fa fa-facebook" aria-hidden="true"  onclick="visitNetwork('facebook')"></i>
+                <i class="fa fa-twitter" aria-hidden="true" onclick="visitNetwork('twitter')"></i>
+                <i class="fa fa-instagram" aria-hidden="true" onclick="visitNetwork('instagram')"></i>
             </div>
         </div>
         <div class="messages">

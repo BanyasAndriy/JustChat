@@ -13,4 +13,8 @@ public interface CustomUserRepository extends JpaRepository<CustomUser,Long> {
     boolean existsByLogin(String login);
 
 
+
+
+
+
 }

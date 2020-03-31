@@ -54,16 +54,43 @@ public class UserService {
     }
 
 
+    @Transactional
+    public List<String> getAllNetworks(CustomUser customUser){
 
 
 
+        List<String> networks = new LinkedList<>();
+
+        if (customUser.getFacebook()!=null){
+            networks.add(customUser.getFacebook());
+        }else networks.add("");
+
+        if (customUser.getTwitter()!=null){
+            networks.add(customUser.getTwitter());
+        }else networks.add("");
+
+        if (customUser.getInstagram()!=null){
+            networks.add(customUser.getInstagram());
+        }else networks.add("");
+
+return networks;
+
+    }
 
 
+    public String getNetworkUrl(String owner, String nameOfTheNetwork) {
 
+        CustomUser customUser = customUserRepository.findByLogin(owner);
+        String url = "";
 
+        if (nameOfTheNetwork.trim().equals("facebook")) {
+            url = customUser.getFacebook();
+        } else if (nameOfTheNetwork.trim().equals("twitter")) {
+            url = customUser.getTwitter();
+        } else if (nameOfTheNetwork.trim().equals("instagram")) {
+            url = customUser.getInstagram();
+        }
 
-
-
-
-
+    return url;
+    }
 }

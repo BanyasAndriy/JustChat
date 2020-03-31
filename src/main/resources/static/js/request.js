@@ -187,8 +187,8 @@ $(function () {
 
 
 
-
                 $('.msg').html(select);
+
 
             }
 
@@ -284,12 +284,78 @@ function getHistory(from ,  to ) {
 };
 
 
+function saveUrlNetwork(id,value){
+
+    alert("id  = " + id );
+alert("value= " + value)
+
+    var network={nameOfTheNetwork : id,
+              urlOfTheNetwork  : value}
+
+
+    $.ajax({
+        type: "POST",
+        contentType: 'application/json; charset=utf-8',
+        dataType: "text",
+        url: '/save-network',
+        data: JSON.stringify(network),
+        success: function (response) {
+ alert("network  saved");
+
+        }
+    });
+
+}
+
+$(document).ready(function () {
+
+    $.ajax({
+        type: "POST",
+        contentType : 'application/json; charset=utf-8',
+        dataType : "json",
+        url: '/get-all-networks',
+
+        success :function(response){
 
 
 
+            $("#facebook").val(response[0]);
+
+
+            $("#twitter").val(response[1]);
+
+            $("#instagram").val(response[2]);
+
+        }
+    });
+});
+
+
+function visitNetwork( network ) {
+
+   let  login=$('.chat-login').html();
+
+    if ($('.chat-login').html()==='Загальний чат') {
+        data = {nameOfTheNetwork: network, owner: $('#current-user').html()};
+    }else data={nameOfTheNetwork: network, owner: login};
+
+    $.ajax({
+        type: "POST",
+        contentType : 'application/json; charset=utf-8',
+        dataType : "text",
+        data:JSON.stringify(data),
+        url: '/visit-network',
+        success :function(response){
+            if (response!=null){
+                window.open(response);
+            }
+
+        }
+    });
 
 
 
+}
 
 
 function connect() {
@@ -324,26 +390,11 @@ getHistory($('#current-user').html() ,$('.chat-login').html());
     $('.message-input input').val(null);
     /*$('.contact.active .preview').html('<span>You: </span>' + text);*/
    // $(".messages").animate({ scrollTop: $(document).height() }, "fast");
-   // divElement.scrollTop = 9999;
+
+/*    var el = document.getElementsByClassName('.message');
+    el.scrollTop = Math.ceil( el.scrollHeight -  el.clientHeight);*/
 
 
-// if(current_user!=to  and != from){
-//}
-
-  /*  if ($('#current-user').html()==to) {
-        $('<li class="replies"><img src="./image/anonim.png" alt="" /><p class="sendMessages">' + text + '</p></li>').appendTo($('.messages ul'));
-
-    }else{
-        $('<li class="sent"><img src="./image/anonim.png" alt="" /><p class="sendMessages">' + text + '</p></li>').appendTo($('.messages ul'));
-
-
-    }
-    $('.message-input input').val(null);
-    $('.contact.active .preview').html('<span>You: </span>' + text);
-    $(".messages").animate({ scrollDown: $(document).height() }, "fast");
-
-
-*/
 
 
 
