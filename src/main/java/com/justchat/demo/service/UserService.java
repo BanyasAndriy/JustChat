@@ -2,6 +2,7 @@ package com.justchat.demo.service;
 
 import com.justchat.demo.entity.ChatMessage;
 import com.justchat.demo.entity.CustomUser;
+import com.justchat.demo.entity.Group;
 import com.justchat.demo.repository.ChatMessageRepository;
 import com.justchat.demo.repository.CustomUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -92,5 +93,57 @@ return networks;
         }
 
     return url;
+    }
+
+    public Set<CustomUser> getSavedUsers(CustomUser currentUser) {
+
+        Set<CustomUser> users = new HashSet<>();
+        List<ChatMessage> allMessages = chatMessageRepository.findAll();
+
+
+
+        for (ChatMessage allMessage : allMessages) {
+
+            if (getUserByLogin(allMessage.getTo()).equals(currentUser)) {
+                users.add(allMessage.getCustomUser());
+            }
+        }
+
+        /*
+        List<Group> groups = currentUser.getGroup();*/
+
+        List<ChatMessage> messages = chatMessageRepository.findByCustomUser(currentUser);
+
+users.add(currentUser);
+
+        for (ChatMessage message : messages) {
+
+            users.add(getUserByLogin(message.getTo()));
+            /*users.add((message.getCustomUser()));*/
+
+        }
+
+        return users;
+
+    }
+
+    public Set<CustomUser> searchUser(String login) {
+
+    return customUserRepository.findByLoginStartsWith(login);
+
+
+
+
+    }
+
+    public Set<Group> getSavedGroups(CustomUser currentUser) {
+
+        Set<Group> groups = new HashSet<>(currentUser.getGroup());
+
+      String l ;
+
+
+    return groups;
+
     }
 }

@@ -58,13 +58,16 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/resources/static/js/chat.js",
                 "/resources/static/js/request.js",
                 "/resources/static/css/sign.css",
-                "/resources/static/js/chat.js"
-                ).permitAll();
+                "/resources/static/js/chat.js",
+                "/resources/static/css/group.css",
+                "/resources/static/js/group.js"
+
+        ).permitAll();
 
         // /userInfo page requires login as ROLE_USER or ROLE_ADMIN.
         // If no login, it will redirect to /login page.
         http.authorizeRequests().antMatchers("/").authenticated();
-
+        http.authorizeRequests().antMatchers("/page-to-create-group").authenticated();
         // Config for Login Form
         http.authorizeRequests().and().formLogin()//
                 // Submit URL of login page.

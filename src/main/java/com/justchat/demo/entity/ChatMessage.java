@@ -10,7 +10,7 @@ public class ChatMessage {
 
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     @Column( columnDefinition="TEXT" , name = "text_message")
     private String message;
@@ -18,7 +18,9 @@ public class ChatMessage {
     @Column( name = "whom")
     private String to;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+
+
+    @ManyToOne
     private CustomUser customUser;
 
     @Temporal(TemporalType.TIMESTAMP)
@@ -27,6 +29,10 @@ public class ChatMessage {
 
     @Enumerated(EnumType.STRING)
     private MessageStatus messageStatus;
+
+
+    @ManyToOne
+    Group group;
 
     public ChatMessage() {
     }

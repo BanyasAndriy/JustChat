@@ -731,8 +731,13 @@
         </div>
         <div id="search">
             <label for=""><i class="fa fa-search" aria-hidden="true"></i></label>
-            <input type="text" placeholder="Search contacts..." />
+            <input type="text" placeholder="Search contacts..." id="search-user" oninput="searchUsers(this.value)" />
         </div>
+
+            <button id="user" style="width: 50%;" onclick="getAllUsers()"> Contacts </button>
+            <button id="groups" style="width: 50%; float: right;" onclick="getAllGroups()"> Groups </button>
+
+
         <div id="contacts">
             <ul class="users">
 
@@ -751,10 +756,13 @@
         <div id="bottom-bar">
             <button id="addcontact"><i class="fa fa-user-plus fa-fw" aria-hidden="true"></i> <span>Add contact</span></button>
             <button id="settings"><i class="fa fa-cog fa-fw" aria-hidden="true"></i> <span>Settings</span></button>
-            <form action="/logout" >
-            <button id="exit"><i class="fa fa-cog fa-fw" aria-hidden="true"></i> <span>Exit</span></button>
-            </form>
+            <form action="/page-to-create-group">
             <button id="create-group"><i class="fa fa-cog fa-fw" aria-hidden="true"></i> <span>Create Group</span></button>
+            </form>
+                <form action="/logout" >
+                <button id="exit"><i class="fa fa-cog fa-fw" aria-hidden="true"></i> <span>Exit</span></button>
+            </form>
+
         </div>
     </div>
     <div class="content">

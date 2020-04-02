@@ -13,6 +13,7 @@ public interface ChatMessageRepository extends JpaRepository<ChatMessage,Long> {
 
 
     List<ChatMessage> findByCustomUserAndTo(CustomUser customUser , String to);
+    List<ChatMessage> findByCustomUser(CustomUser customUser);
 
 
 }

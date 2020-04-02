@@ -7,7 +7,7 @@ import java.util.*;
 public class CustomUser {
 
      @Id
-     @GeneratedValue
+     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
      @Column(unique = true)
     private String login;
@@ -18,6 +18,9 @@ public class CustomUser {
     private String facebook;
     private String twitter;
     private String instagram;
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    private List<Group> group;
 
     public CustomUser() {
     }
@@ -132,5 +135,18 @@ public class CustomUser {
 
     public void setInstagram(String instagram) {
         this.instagram = instagram;
+    }
+
+    public List<Group> getGroup() {
+        return group;
+    }
+
+    public void setGroup(List<Group> group) {
+        this.group = group;
+    }
+
+
+    public void initGroup(Group group) {
+        this.group.add(group);
     }
 }

@@ -24,6 +24,11 @@ public class MainController {
         return new ModelAndView("sign");
     }
 
+    @RequestMapping("/cancel")
+    public ModelAndView cancel(){
+        return new ModelAndView("chat");
+    }
+
 
 
 

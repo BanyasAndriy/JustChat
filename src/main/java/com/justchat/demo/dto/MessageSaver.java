@@ -5,6 +5,7 @@ public class MessageSaver {
     private String message;
     private String to;
     private String from;
+    private String messageStatus;
 
 
     public String getMessage() {
@@ -29,5 +30,14 @@ public class MessageSaver {
 
     public void setFrom(String from) {
         this.from = from;
+    }
+
+
+    public String getMessageStatus() {
+        return messageStatus;
+    }
+
+    public void setMessageStatus(String messageStatus) {
+        this.messageStatus = messageStatus;
     }
 }

@@ -1,5 +1,6 @@
 package com.justchat.demo.controller;
 
+import com.justchat.demo.dto.MessageSender;
 import com.justchat.demo.dto.NetworkData;
 import com.justchat.demo.entity.ChatMessage;
 import com.justchat.demo.entity.CustomUser;
@@ -25,15 +26,37 @@ public class UserController {
     UserService userService;
 
     @RequestMapping(value = "/get-all-users" ,method = RequestMethod.POST)
-    public List<CustomUser> getHistory(){
+    public Set<CustomUser> getAllUsers(){
 
-
-        List<CustomUser> customUsers =userService.getAllUser();
+        CustomUser currentUser =userService.getUserByLogin(getLoginCurrentUser());
+        Set<CustomUser> customUsers =userService.getSavedUsers(currentUser);
 
 
 return customUsers;
+    }
+
+
+
+    @RequestMapping(value = "/search-users" ,method = RequestMethod.POST)
+    public Set<CustomUser> searchUsers(@RequestBody MessageSender user){
+
+
+        CustomUser currentUser =userService.getUserByLogin(getLoginCurrentUser());
+
+
+        Set<CustomUser> searchedUsers = userService.searchUser(user.getLogin());
+
+
+        return searchedUsers;
 
     }
+
+
+
+
+
+
+
 
 
     @RequestMapping(value = "/get-current-user" ,method = RequestMethod.POST)

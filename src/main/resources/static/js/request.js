@@ -3,17 +3,7 @@
 
 
 
-
-
-
-
-
-jQuery(document).ready(function($){
-
-
-
-
-
+function getAllUsers(){
 
 
     $.ajax({
@@ -28,35 +18,89 @@ jQuery(document).ready(function($){
 
             console.log(response.length);
 
-      for (let i = 0 ;i< response.length;i++){
+            for (let i = 0 ;i< response.length;i++){
 
 
-   select += '' +
-       '      <li class="contact" id="pzd">\n'+
-                '<div class="wrap">\n'+
-                '<span class="contact-status online"></span>\n'+
-                '<img  class = "avarar" src="./image/anonim.png" alt="" />\n'+
-                '<div class="meta">\n'+
-                '<p class="name">'+response[i].login+'</p>\n'+
-            '<p class="preview">'+"" +'</p>\n'+
-            '</div>\n'+
-            '</div>\n'+
-            '</li>\n';
+                select += '' +
+                    '      <li class="contact" id="pzd">\n'+
+                    '<div class="wrap">\n'+
+                    '<span class="contact-status online"></span>\n'+
+                    '<img  class = "avarar" src="./image/anonim.png" alt="" />\n'+
+                    '<div class="meta">\n'+
+                    '<p class="name">'+response[i].login+'</p>\n'+
+                    '<p class="preview">'+"" +'</p>\n'+
+                    '</div>\n'+
+                    '</div>\n'+
+                    '</li>\n';
 
 
-          $('.users').html(select);
+                $('.users').html(select);
 
 
-      }
+            }
 
         },
         error:function(response,textStatus) {
- alert("I am in error");
+            alert("I am in error");
 
         }
     });
 
+
+}
+
+
+
+function getAllGroups(){
+    $.ajax({
+        type: "POST",
+        contentType : 'application/json; charset=utf-8',
+        dataType : "json",
+        url: '/get-all-groups',
+
+        success :function(response){
+
+            let select="";
+
+            console.log(response.length);
+
+            for (let i = 0 ;i< response.length;i++){
+
+
+                select += '' +
+                    '      <li class="contact" id="pzd">\n'+
+                    '<div class="wrap">\n'+
+                    '<span class="contact-status online"></span>\n'+
+                    '<img  class = "avarar" src="./image/anonim.png" alt="" />\n'+
+                    '<div class="meta">\n'+
+                    '<p class="name">'+response[i].name+'</p>\n'+
+                    '<p class="preview">'+"" +'</p>\n'+
+                    '</div>\n'+
+                    '</div>\n'+
+                    '</li>\n';
+
+
+                $('.users').html(select);
+
+
+            }
+
+        },
+        error:function(response,textStatus) {
+            alert("I am in error");
+
+        }
+    });
+}
+
+
+jQuery(document).ready(function($){
+getAllUsers();
+
 });
+
+
+
 
 
 
@@ -357,6 +401,160 @@ function visitNetwork( network ) {
 
 }
 
+
+
+function searchUsers(value){
+
+if (value==="") {
+    $('.users').html("");
+    $.ajax({
+        type: "POST",
+        contentType: 'application/json; charset=utf-8',
+        dataType: "json",
+        url: '/get-all-users',
+
+        success: function (response) {
+
+            let select = "";
+
+            console.log(response.length);
+
+            for (let i = 0; i < response.length; i++) {
+
+
+                select += '' +
+                    '      <li class="contact" id="pzd">\n' +
+                    '<div class="wrap">\n' +
+                    '<span class="contact-status online"></span>\n' +
+                    '<img  class = "avarar" src="./image/anonim.png" alt="" />\n' +
+                    '<div class="meta">\n' +
+                    '<p class="name">' + response[i].login + '</p>\n' +
+                    '<p class="preview">' + "" + '</p>\n' +
+                    '</div>\n' +
+                    '</div>\n' +
+                    '</li>\n';
+
+
+                $('.users').html(select);
+
+
+            }
+
+        },
+        error: function (response, textStatus) {
+            alert("I am in error");
+
+        }
+    });
+}else  $('.users').html("");
+
+
+if (value!="") {
+    data = {login: value}
+    $.ajax({
+        type: "POST",
+        contentType: 'application/json; charset=utf-8',
+        dataType: "json",
+        data: JSON.stringify(data),
+        url: '/search-users',
+
+        success: function (response) {
+
+            let select = "";
+
+            console.log(response.length);
+
+            for (let i = 0; i < response.length; i++) {
+
+
+                select += '' +
+                    '      <li class="contact" id="pzd">\n' +
+                    '<div class="wrap">\n' +
+                    '<span class="contact-status online"></span>\n' +
+                    '<img  class = "avarar" src="./image/anonim.png" alt="" />\n' +
+                    '<div class="meta">\n' +
+                    '<p class="name">' + response[i].login + '</p>\n' +
+                    '<p class="preview">' + "" + '</p>\n' +
+                    '</div>\n' +
+                    '</div>\n' +
+                    '</li>\n';
+
+
+                $('.users').html(select);
+
+
+            }
+
+        },
+        error: function (response, textStatus) {
+            alert("I am in error");
+
+        }
+    });
+}
+
+
+
+
+
+
+
+}
+
+
+
+/*
+jQuery(document).ready(function($){
+
+    $.ajax({
+        type: "POST",
+        contentType : 'application/json; charset=utf-8',
+        dataType : "json",
+        url: '/get-all-groups',
+
+        success :function(response){
+            alert("I am in groups");
+            let select="";
+
+            console.log(response.length);
+
+            for (let i = 0 ;i< response.length;i++){
+
+
+                select += '' +
+                    '      <li class="contact" id="pzd">\n'+
+                    '<div class="wrap">\n'+
+                    '<span class="contact-status online"></span>\n'+
+                    '<img  class = "avarar" src="./image/anonim.png" alt="" />\n'+
+                    '<div class="meta">\n'+
+                    '<p class="name">'+response[i].name+'</p>\n'+
+                    '<p class="preview">'+"" +'</p>\n'+
+                    '</div>\n'+
+                    '</div>\n'+
+                    '</li>\n';
+
+
+                $('.users').html(select);
+
+
+            }
+
+        },
+        error:function(response,textStatus) {
+            alert("I am in error");
+
+        }
+    });
+
+});
+*/
+
+
+
+
+
+
+//web sockets
 
 function connect() {
     var socket = new SockJS('/chat-messaging');
