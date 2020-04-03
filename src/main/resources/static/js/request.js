@@ -137,29 +137,6 @@ sendMessage(msg,whom,from);
 
 
 
-      /*  let data={message:msg,
-            to:whom};
-
-        $.ajax({
-            type: "POST",
-            contentType : 'application/json; charset=utf-8',
-            dataType : "text",
-            url: '/save-message' ,
-            data:JSON.stringify(data),
-            success :function(response){
-
-
-
-
-
-            },
-            error:function(response,textStatus) {
-                alert("I am in error");
-
-            }
-        });
-
-*/
 
 
         return false;
@@ -167,7 +144,24 @@ sendMessage(msg,whom,from);
 });
 
 
+$(function () {
+    $(document).on('click', '.choose-users-groups', function(){
 
+        $('.choose-users-groups').attr('id','');
+        $(this).attr('id','choosen');
+
+
+        let messageStatus = $('#choosen').text();
+        console.log(messageStatus);
+if (messageStatus.trim()==="Contacts"){
+    getAllUsers();
+}else if (messageStatus.trim()==="Groups"){
+    getAllGroups();
+}
+
+    })
+
+});
 
 $(function () {
     $(document).on('click', '.contact', function(){
@@ -601,12 +595,12 @@ getHistory($('#current-user').html() ,$('.chat-login').html());
 function disconnect(){
     stompClient.disconnect();
 }
-function sendMessage(message,whom,from){
+function sendMessage(message,whom,from,messageStatus){
     if (message===""){
         return false;
     }
 
-    stompClient.send("/app/message", {}, JSON.stringify({'message': message , 'to':whom,'from':from}));
+    stompClient.send("/app/message", {}, JSON.stringify({'message': message , 'to':whom,'from':from,'messageStatus':messageStatus}));
 
 }
 
