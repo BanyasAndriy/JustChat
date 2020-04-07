@@ -3,9 +3,11 @@ package com.justchat.demo.service;
 
 import com.justchat.demo.entity.ChatMessage;
 import com.justchat.demo.entity.CustomUser;
+import com.justchat.demo.entity.Group;
 import com.justchat.demo.entity.MessageStatus;
 import com.justchat.demo.repository.ChatMessageRepository;
 import com.justchat.demo.repository.CustomUserRepository;
+import com.justchat.demo.repository.GroupRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,10 +28,30 @@ public class MessageService {
     @Autowired
     CustomUserRepository customUserRepository;
 
+    @Autowired
+    GroupService groupService;
+    @Autowired
+    GroupRepository groupRepository;
+
     @Transactional
     public void saveMessage(CustomUser currentUser, String to, String message, MessageStatus messageStatus) {
 
-        chatMessageRepository.save(new ChatMessage(message, to, currentUser,messageStatus));
+
+        Group group = null;
+        ChatMessage msg = null;
+        if (messageStatus.equals(MessageStatus.publicMessage)) {
+            group =groupService.findGroupByName(to);
+            msg = new ChatMessage(message, to, currentUser, messageStatus, group);
+            if (group!=null)
+            group.addToChats(msg);
+        }else {
+            msg = new ChatMessage(message, to, currentUser, messageStatus);
+        }
+            chatMessageRepository.save(msg);
+
+      if (group!=null)
+        groupRepository.save(group);
+
 
     }
 
@@ -55,21 +77,12 @@ public class MessageService {
     }
 
     @Transactional
-    public List<ChatMessage> getGeneralMessage() {
+    public List<ChatMessage> getGeneralMessage(String nameOfGroup) {
 
-        List<ChatMessage> generalMessage = new ArrayList<>();
-
-       List<ChatMessage> allMessage =  chatMessageRepository.findAll();
+        Group group = groupService.findGroupByName(nameOfGroup);
 
 
-        for (ChatMessage msg: allMessage) {
-
-            if (msg.getMessageStatus().equals(MessageStatus.publicMessage)){
-                generalMessage.add(msg);
-            }
-
-        }
-
+        List<ChatMessage> generalMessage=group.getChatMessage();
 
         Collections.sort(generalMessage, (o1, o2) -> {
             if (o1.getDate() == null || o2.getDate() == null)

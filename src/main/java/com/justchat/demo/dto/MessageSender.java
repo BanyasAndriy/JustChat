@@ -1,9 +1,12 @@
 package com.justchat.demo.dto;
 
+import com.justchat.demo.entity.MessageStatus;
+
 public class MessageSender {
 
     private String login;
     private String from;
+    private String messageStatus;
 
     public String getLogin() {
         return login;
@@ -19,5 +22,13 @@ public class MessageSender {
 
     public void setFrom(String from) {
         this.from = from;
+    }
+
+    public String getMessageStatus() {
+        return messageStatus;
+    }
+
+    public void setMessageStatus(String messageStatus) {
+        this.messageStatus = messageStatus;
     }
 }

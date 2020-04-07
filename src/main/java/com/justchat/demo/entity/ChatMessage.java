@@ -1,5 +1,6 @@
 package com.justchat.demo.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import javax.persistence.*;
@@ -17,9 +18,11 @@ public class ChatMessage {
 
     @Column( name = "whom")
     private String to;
+    @Column( name = "fromWhichUser")
+    private String from;
 
 
-
+    @JsonIgnore
     @ManyToOne
     private CustomUser customUser;
 
@@ -31,7 +34,7 @@ public class ChatMessage {
     private MessageStatus messageStatus;
 
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     Group group;
 
     public ChatMessage() {
@@ -44,9 +47,20 @@ public class ChatMessage {
         this.customUser=customUser;
         this.messageStatus=messageStatus;
         this.date=new Date();
+        this.from=customUser.getLogin();
 
     }
 
+    public ChatMessage(String message, String to, CustomUser currentUser, MessageStatus messageStatus, Group group)
+    {
+        this.message=message;
+        this.to=to;
+        this.customUser=currentUser;
+        this.messageStatus=messageStatus;
+        this.group=group;
+        this.date=new Date();
+        this.from=customUser.getLogin();
+    }
 
 
     public Long getId() {
@@ -96,5 +110,14 @@ public class ChatMessage {
 
     public void setMessageStatus(MessageStatus messageStatus) {
         this.messageStatus = messageStatus;
+    }
+
+
+    public String getFrom() {
+        return from;
+    }
+
+    public void setFrom(String from) {
+        this.from = from;
     }
 }

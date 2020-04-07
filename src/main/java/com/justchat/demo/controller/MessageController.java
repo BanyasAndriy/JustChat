@@ -13,6 +13,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.constraints.Null;
 import java.util.List;
 
 @RestController
@@ -41,14 +42,27 @@ messageService.saveMessage(currentUser,messageSaver.getTo(),messageSaver.getMess
     @RequestMapping(value = "/get-history" ,method = RequestMethod.POST)
     public List<ChatMessage> getHistory(@RequestBody MessageSender messageSender ){
 
+        MessageStatus messageStatus= MessageStatus.privateMessage;
+        if (messageSender.getMessageStatus().trim().equals("Groups")){
+             messageStatus=MessageStatus.publicMessage;
+        }else {
+             messageStatus=MessageStatus.privateMessage;
+        }
+
+
 
         List<ChatMessage> history=null;
-       if(messageSender.getFrom()==null){
-           history = messageService.getPrivateMessage(getLoginCurrentUser(),messageSender.getLogin());
-       }else {
-           history = messageService.getPrivateMessage(messageSender.getFrom(),messageSender.getLogin());
-       }
 
+        if (messageStatus.equals(MessageStatus.privateMessage)) {
+            if (messageSender.getFrom() == null) {
+                history = messageService.getPrivateMessage(getLoginCurrentUser(), messageSender.getLogin());
+            } else {
+                history = messageService.getPrivateMessage(messageSender.getFrom(), messageSender.getLogin());
+            }
+        }else {
+
+            history=messageService.getGeneralMessage(messageSender.getLogin());
+        }
 
 
         return  history;

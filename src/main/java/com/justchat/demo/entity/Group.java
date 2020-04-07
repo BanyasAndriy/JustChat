@@ -19,7 +19,7 @@ public class Group {
     private List<CustomUser> users;
 
 
-    @OneToMany
+    @OneToMany(cascade=CascadeType.ALL)
     private List<ChatMessage> chatMessage;
 
 
@@ -65,6 +65,13 @@ public class Group {
         this.users = users;
     }
 
+    public List<ChatMessage> getChatMessage() {
+        return chatMessage;
+    }
+
+    public void setChatMessage(List<ChatMessage> chatMessage) {
+        this.chatMessage = chatMessage;
+    }
 
     @Override
     public boolean equals(Object o) {
@@ -79,5 +86,9 @@ public class Group {
     @Override
     public int hashCode() {
         return Objects.hash(getName(), getOwnerLogin(), getUsers());
+    }
+
+    public void addToChats(ChatMessage msg) {
+        this.chatMessage.add(msg);
     }
 }

@@ -1,5 +1,6 @@
 package com.justchat.demo.controller;
 
+import com.justchat.demo.dto.CustomUserDto;
 import com.justchat.demo.dto.MessageSender;
 import com.justchat.demo.dto.NetworkData;
 import com.justchat.demo.entity.ChatMessage;
@@ -32,7 +33,8 @@ public class UserController {
         Set<CustomUser> customUsers =userService.getSavedUsers(currentUser);
 
 
-return customUsers;
+
+return  customUsers;
     }
 
 

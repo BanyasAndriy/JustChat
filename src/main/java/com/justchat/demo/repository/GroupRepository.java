@@ -7,4 +7,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 @Repository
 public interface GroupRepository  extends JpaRepository<Group,Long> {
+
+    public Group findByName(String name);
 }

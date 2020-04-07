@@ -1,8 +1,10 @@
 package com.justchat.demo.service;
 
+import com.justchat.demo.dto.CustomUserDto;
 import com.justchat.demo.entity.ChatMessage;
 import com.justchat.demo.entity.CustomUser;
 import com.justchat.demo.entity.Group;
+import com.justchat.demo.entity.MessageStatus;
 import com.justchat.demo.repository.ChatMessageRepository;
 import com.justchat.demo.repository.CustomUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +28,10 @@ public class UserService {
      public List<CustomUser> getAllUser(){
         return customUserRepository.findAll();
     }
+
+
+
+
 
 
     @Transactional
@@ -95,35 +101,36 @@ return networks;
     return url;
     }
 
+    @Transactional
     public Set<CustomUser> getSavedUsers(CustomUser currentUser) {
 
-        Set<CustomUser> users = new HashSet<>();
-        List<ChatMessage> allMessages = chatMessageRepository.findAll();
+        Set<CustomUser> customUsers = new HashSet<>();
+        List<ChatMessage> allMessages = chatMessageRepository.findByMessageStatus(MessageStatus.privateMessage);
 
 
 
         for (ChatMessage allMessage : allMessages) {
 
             if (getUserByLogin(allMessage.getTo()).equals(currentUser)) {
-                users.add(allMessage.getCustomUser());
+                customUsers.add(allMessage.getCustomUser());
             }
         }
 
-        /*
-        List<Group> groups = currentUser.getGroup();*/
-
         List<ChatMessage> messages = chatMessageRepository.findByCustomUser(currentUser);
 
-users.add(currentUser);
+        customUsers.add(currentUser);
 
         for (ChatMessage message : messages) {
 
-            users.add(getUserByLogin(message.getTo()));
-            /*users.add((message.getCustomUser()));*/
+            customUsers.add(getUserByLogin(message.getTo()));
 
         }
 
-        return users;
+
+
+
+
+        return customUsers;
 
     }
 
@@ -140,7 +147,7 @@ users.add(currentUser);
 
         Set<Group> groups = new HashSet<>(currentUser.getGroup());
 
-      String l ;
+
 
 
     return groups;

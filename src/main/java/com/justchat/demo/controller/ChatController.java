@@ -29,9 +29,19 @@ UserService userService;
     public MessageSaver getMessages(@Payload MessageSaver messageSaver) {
 
 
-    CustomUser currentUser = userService.getUserByLogin(messageSaver.getFrom());
+        CustomUser currentUser = userService.getUserByLogin(messageSaver.getFrom());
+        MessageStatus messageStatus=null;
 
-        messageService.saveMessage(currentUser,messageSaver.getTo(),messageSaver.getMessage(), MessageStatus.privateMessage);
+String status = messageSaver.getMessageStatus().trim().toLowerCase();
+
+if (status.equals("groups")){
+    messageStatus=MessageStatus.publicMessage;
+
+}else if (status.equals("contacts")){
+            messageStatus=MessageStatus.privateMessage;
+        }
+
+        messageService.saveMessage(currentUser,messageSaver.getTo(),messageSaver.getMessage(), messageStatus);
 
         return messageSaver;
     }
