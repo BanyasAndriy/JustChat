@@ -27,7 +27,7 @@ public class UserController {
     UserService userService;
 
     @RequestMapping(value = "/get-all-users", method = RequestMethod.POST)
-    public Set<CustomUser> getAllUsers() {
+    public Set<CustomUserDto> getAllUsers() {
 
         CustomUser currentUser = userService.getUserByLogin(getLoginCurrentUser());
 

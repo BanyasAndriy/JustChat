@@ -21,7 +21,7 @@ function getAllUsers() {
                         '<span class="contact-status online"></span>\n' +
                         '<img  class = "avarar" src="./image/anonim.png" alt="" />\n' +
                         '<div class="meta">\n' +
-                        '<p class="name">' + response[i].login + '</p><p id="countOfNewMessage" >'+response[i].newMessagesCount+'</p>\n' +
+                        '<p class="name">' + response[i].login + '</p><p id="countOfNewMessage" >'+response[i].countOfNewMessages+'</p>\n' +
                         '<p class="preview">' + "" + '</p>\n' +
                         '</div>\n' +
                         '</div>\n' +
@@ -286,19 +286,13 @@ jQuery(document).ready(function ($) {
                 $('#rightPanel').show();
 
 
-
-                let msg ="Користувач < " +  checkboxes.join(',') +" > доданий до групи ";
+                let msg = "Користувач < " + checkboxes.join(',') + " > доданий до групи ";
 
                 let whom = $('.chat-login').html();
-                let from ='AddedGroupBot';
+                let from = 'AddedGroupBot';
                 let messageStatus = $('#choosen').text().trim();
                 /!* sendMessage(msg, whom, from, messageStatus);*!/
-                sendMessage(msg,whom,from,messageStatus);
-
-
-
-
-
+                sendMessage(msg, whom, from, messageStatus);
 
 
             },
@@ -307,7 +301,6 @@ jQuery(document).ready(function ($) {
 
             }
         });
-
 
 
     })
@@ -458,14 +451,13 @@ $(document).ready(function () {
             url: '/leave-group',
             data: JSON.stringify(data),
             success: function (response) {
-if (response==="OK")
-    window.location = 'http://localhost:8080';
+                if (response === "OK")
+                    window.location = 'http://localhost:8080';
 
             }
         });
     });
 });
-
 
 
 $(function () {
@@ -488,18 +480,13 @@ $(function () {
                 getUsersFromGroup();
 
 
-
-                let msg ="Користувач < " +  userName +" > був видалений з групи!";
+                let msg = "Користувач < " + userName + " > був видалений з групи!";
 
                 let whom = $('.chat-login').html();
-                let from ='DeletedGroupBot';
+                let from = 'DeletedGroupBot';
                 let messageStatus = $('#choosen').text().trim();
                 /* sendMessage(msg, whom, from, messageStatus);*/
-                leaveGroup(msg,whom,from,messageStatus);
-
-
-
-
+                leaveGroup(msg, whom, from, messageStatus);
 
 
             }
@@ -541,68 +528,11 @@ $(function () {
 
         data = {login: login, messageStatus: messageStatus};
 
-       /* $.ajax({
-            type: "POST",
-            contentType: 'application/json; charset=utf-8',
-            dataType: "json",
-            url: '/get-history',
-            data: JSON.stringify(data),
-            success: function (response) {
 
-                let select = "";
-
-
-                console.log(response.length);
-                if ($('#choosen').text().trim() === "Contacts") {
-                    for (let i = 0; i < response.length; i++) {
-                        if (response[i].to === $('#current-user').html()) {
-
-                            select += '' + '<li class="replies">\n' +
-                                '<img src="./image/anonim.png" alt="" />\n' +
-                                '<p class="sendMessages">' + response[i].message + '</p>\n' +
-                                '</li>\n';
-
-                        } else {
-                            select += '' + '<li class="sent">\n' +
-                                '<img src="./image/anonim.png" alt="" />\n' +
-                                '<p class="sendMessages">' + response[i].message + '</p>\n' +
-                                '</li>\n';
-                        }
-                        $('.msg').html(select);
-                    }
-                } else if ($('#choosen').text().trim() === "Groups") {
-                    for (let i = 0; i < response.length; i++) {
-
-                        console.log(response[i].from + "  : " + $('#current-user').html());
-                        console.log(response[i].from === $('#current-user').html());
-
-
-                        if (response[i].from === $('#current-user').html()) {
-
-                            select += '' + '<li class="sent">\n' +
-                                '<img src="./image/anonim.png" alt="" />\n' +
-                                '<p class="sendMessages">' + response[i].message + '</p>\n' +
-                                '</li>\n';
-
-                        } else {
-                            select += '' + '<li class="replies">\n' +
-                                '<img src="./image/anonim.png" alt="" />\n' +
-                                '<p class="sendMessages">' + response[i].message + '</p>\n' +
-                                '</li>\n';
-                        }
-
-
-                        $('.msg').html(select);
-
-                    }
-
-
-                }
-
-
-            }
-        });*/
         getHistory($('#current-user').html(), login);
+      //  clearNotification($('#current-user').html(),login);
+        clearNotification($('#current-user').html(),$('.chat-login').html());
+
     })
 });
 
@@ -620,6 +550,30 @@ $(function () {
 
     })
 });
+
+
+function clearNotification(from, to) {
+
+
+   let  data = {
+        login: to,
+        from: from,
+    };
+    $.ajax({
+        type: "POST",
+        contentType: 'application/json; charset=utf-8',
+        dataType: "text",
+        url: '/clear-notification',
+        data: JSON.stringify(data),
+        success: function (response) {
+
+
+
+                   }
+    });
+
+}
+
 
 
 function getHistory(from, to) {
@@ -642,9 +596,19 @@ function getHistory(from, to) {
             let select = "";
 
 
-            console.log(response.length);
             if ($('#choosen').text().trim() === "Contacts") {
                 for (let i = 0; i < response.length; i++) {
+                    if (response[i].message==="Нове повідомлення" && response[i].from!==$('#current-user').html()){
+
+                        select += '' + '<li class="addedtoGroup">\n' +
+                            '<p class="sendMessages">' + response[i].message + '</p>\n' +
+                            '</li>\n';
+
+
+                    }else if (response[i].message==="Нове повідомлення" && response[i].from===$('#current-user').html()){
+                        ;
+
+                    }else
                     if (response[i].to === $('#current-user').html()) {
 
                         select += '' + '<li class="replies">\n' +
@@ -672,23 +636,19 @@ function getHistory(from, to) {
                             '</li>\n';
 
 
-                    } else if (response[i].from === 'AddedGroupBot')
-                    {
+                    } else if (response[i].from === 'AddedGroupBot') {
                         select += '' + '<li class="addedtoGroup">\n' +
                             '<p class="sendMessages">' + response[i].message + '</p>\n' +
                             '</li>\n';
 
 
-
-                    }else if(response[i].from === 'DeletedGroupBot'){
+                    } else if (response[i].from === 'DeletedGroupBot') {
                         select += '' + '<li class="leftGroup">\n' +
                             '<p class="sendMessages">' + response[i].message + '</p>\n' +
                             '</li>\n';
 
 
-                    }
-
-                    else  if (response[i].from === $('#current-user').html()) {
+                    } else if (response[i].from === $('#current-user').html()) {
 
 
                         select += '' + '<li class="sent">\n' +
@@ -711,6 +671,7 @@ function getHistory(from, to) {
 
 
             }
+
 
 
         }
@@ -1018,17 +979,16 @@ jQuery(document).ready(function($){
 */
 
 
-
 $(function () {
     $(document).on('click', '#leave-group', function () {
 
-        let msg ="Користувач < " +  $('#current-user').html() +" > покинув групу ";
+        let msg = "Користувач < " + $('#current-user').html() + " > покинув групу ";
 
         let whom = $('.chat-login').html();
-        let from ='LeftGroupBot';
+        let from = 'LeftGroupBot';
         let messageStatus = $('#choosen').text().trim();
-       /* sendMessage(msg, whom, from, messageStatus);*/
-leaveGroup(msg,whom,from,messageStatus);
+        /* sendMessage(msg, whom, from, messageStatus);*/
+        leaveGroup(msg, whom, from, messageStatus);
 
     })
 });

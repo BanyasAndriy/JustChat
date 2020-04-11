@@ -14,7 +14,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -36,7 +35,7 @@ public class MessageService {
 
 
 
-    @Transactional
+  /*  @Transactional
     public void saveMessage(CustomUser currentUser, String to, String message, MessageStatus messageStatus) {
 
 CustomUser newMessageBot=null;
@@ -60,12 +59,12 @@ CustomUser newMessageBot=null;
 
 
     }
+*/
 
-
-    /*@Transactional
+    @Transactional
     public void saveMessage(CustomUser currentUser, String to, String message, MessageStatus messageStatus) {
 
-        CustomUser newMessageBot = null;
+
         Group group = null;
         ChatMessage msg = null;
         ChatMessage newMessageNotification = null;
@@ -76,14 +75,17 @@ CustomUser newMessageBot=null;
                 group.addToChats(msg);
         } else {
 
-            if (chatMessageRepository.findByCustomUser(customUserRepository.findByLogin(to))
-                    .contains(new ChatMessage("Нове повідомлення", currentUser.getLogin(), customUserRepository.findByLogin("newMessageBot"), messageStatus))) {
+
+            if ( chatMessageRepository.findByCustomUser(currentUser).contains(new ChatMessage("Нове повідомлення", to, currentUser, messageStatus)))
+            {
                 msg = new ChatMessage(message, to, currentUser, messageStatus);
             } else {
 
-                newMessageBot = new CustomUser("newMessageBot");
-                newMessageNotification = new ChatMessage("Нове повідомлення", to, newMessageBot, messageStatus);
+              //  newMessageBot = new CustomUser("newMessageBot");
+                newMessageNotification = new ChatMessage("Нове повідомлення", to, currentUser, messageStatus);
                 msg = new ChatMessage(message, to, currentUser, messageStatus);
+
+             //   customUserRepository.save(newMessageBot);
             }
 
 
@@ -93,13 +95,13 @@ CustomUser newMessageBot=null;
         }
         chatMessageRepository.save(msg);
 
+
         if (group != null)
             groupRepository.save(group);
 
 
     }
 
-*/
     @Transactional
     public List<ChatMessage> getPrivateMessage(String loginFirstUser, String loginSecondUser) {
 
@@ -111,7 +113,7 @@ CustomUser newMessageBot=null;
         chatMessages.addAll(chatMessageRepository.findByCustomUserAndTo(firstUser, loginSecondUser));
         chatMessages.addAll(chatMessageRepository.findByCustomUserAndTo(secondUser, loginFirstUser));
 
-        Collections.sort(chatMessages, (o1, o2) -> {
+        chatMessages.sort((o1, o2) -> {
             if (o1.getDate() == null || o2.getDate() == null)
                 return 0;
             return o1.getDate().compareTo(o2.getDate());
@@ -119,6 +121,23 @@ CustomUser newMessageBot=null;
 
         return chatMessages;
     }
+
+
+    @Transactional
+    public boolean deleteNotificationAboutNewMessages(String loginFirstUser, String loginSecondUser) {
+
+
+
+List<ChatMessage> fromMess= chatMessageRepository.deleteAllByFromAndToAndMessage(loginSecondUser,loginFirstUser,"Нове повідомлення");
+        List<ChatMessage> toMess= chatMessageRepository.deleteAllByFromAndToAndMessage(loginFirstUser,loginSecondUser,"Нове повідомлення");
+
+
+
+
+        return false;
+    }
+
+
 
     @Transactional
     public List<ChatMessage> getGeneralMessage(String nameOfGroup) {

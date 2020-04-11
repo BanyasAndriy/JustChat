@@ -103,7 +103,7 @@ public class UserService {
     }
 
     @Transactional
-    public Set<CustomUser> getSavedUsers(CustomUser currentUser) {
+    public Set<CustomUser> getUsers(CustomUser currentUser) {
 
         Set<CustomUser> customUsers = new HashSet<>();
         List<ChatMessage> allMessages = chatMessageRepository.findByMessageStatus(MessageStatus.privateMessage);
@@ -130,6 +130,64 @@ public class UserService {
         return customUsers;
 
     }
+
+
+    @Transactional
+    public Set<CustomUserDto> getSavedUsers(CustomUser currentUser) {
+
+        Set<CustomUser> customUsers = new HashSet<>();
+        List<ChatMessage> allMessages = chatMessageRepository.findByMessageStatus(MessageStatus.privateMessage);
+
+        int newMessageCount = 0;
+        for (ChatMessage allMessage : allMessages) {
+
+            if (getUserByLogin(allMessage.getTo()).equals(currentUser)) {
+                customUsers.add(allMessage.getCustomUser());
+            }
+        }
+
+        List<ChatMessage> messages = chatMessageRepository.findByCustomUser(currentUser);
+
+        customUsers.add(currentUser);
+
+        for (ChatMessage message : messages) {
+
+            customUsers.add(getUserByLogin(message.getTo()));
+
+        }
+
+        List<CustomUser> preResult = new ArrayList<>(customUsers);
+        Set<CustomUserDto> result = new HashSet<>();
+
+
+        Integer indexOfStartNewMsg = null;
+        for (int i = 0; i < preResult.size(); i++) {
+            newMessageCount=0;
+            indexOfStartNewMsg=null;
+            for (int j = 0; j <  chatMessageRepository.findByCustomUserAndTo(preResult.get(i),currentUser.getLogin()).size(); j++) {
+
+                if (chatMessageRepository.findByCustomUserAndTo(preResult.get(i),currentUser.getLogin()).get(j).getTo().equals(currentUser.getLogin()) &&
+                        chatMessageRepository.findByCustomUserAndTo(preResult.get(i),currentUser.getLogin()).get(j).getMessage().equals("Нове повідомлення")) {
+                    indexOfStartNewMsg = j+1;
+                    break;
+                }
+
+            }
+
+            if (indexOfStartNewMsg != null) {
+                newMessageCount = chatMessageRepository.findByCustomUserAndTo(preResult.get(i),currentUser.getLogin()).size() - indexOfStartNewMsg;
+            }
+            result.add(new CustomUserDto(preResult.get(i).getAvatar(), preResult.get(i).getLogin(), newMessageCount!=0?newMessageCount-1:0));
+        }
+
+
+
+
+
+        return result;
+
+    }
+
 
     @Transactional
     public Set<CustomUser> searchUser(String login) {

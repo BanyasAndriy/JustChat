@@ -5,6 +5,7 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.Objects;
 
 @Entity
 public class ChatMessage {
@@ -119,5 +120,21 @@ public class ChatMessage {
 
     public void setFrom(String from) {
         this.from = from;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof ChatMessage)) return false;
+        ChatMessage that = (ChatMessage) o;
+        return Objects.equals(getMessage(), that.getMessage()) &&
+                Objects.equals(getTo(), that.getTo()) &&
+                Objects.equals(getFrom(), that.getFrom()) &&
+                getMessageStatus() == that.getMessageStatus();
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getMessage(), getTo(), getFrom(), getMessageStatus());
     }
 }

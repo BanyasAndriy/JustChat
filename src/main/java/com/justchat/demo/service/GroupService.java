@@ -171,13 +171,14 @@ public class GroupService {
         return true;
     }
 
+    @Transactional
     public List<CustomUserDto> getUnsignedUsers(String groupName, String loginCurrentUser) {
 
         List<CustomUserDto> users = new ArrayList<>();
         Group group = groupRepository.findByName(groupName);
         CustomUser customUser = customUserRepository.findByLogin(loginCurrentUser);
 
-        List<CustomUser> savedUsers = new ArrayList<>(userService.getSavedUsers(customUser));
+        List<CustomUser> savedUsers = new ArrayList<>(userService.getUsers(customUser));
 
         for (CustomUser user : savedUsers
         ) {

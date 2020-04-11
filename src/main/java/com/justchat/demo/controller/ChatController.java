@@ -51,11 +51,7 @@ public class ChatController {
             currentUser = userRepository.save(new CustomUser("DeletedGroupBot"));
         }
 
-        if (to.getNewMessagesCount() == null){
-            to.setNewMessagesCount(1);
-        }else {
-            to.setNewMessagesCount(to.getNewMessagesCount() + 1);
-        }
+
         userService.saveUser(to);
 
 
