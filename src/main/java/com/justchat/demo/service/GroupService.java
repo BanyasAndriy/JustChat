@@ -4,6 +4,7 @@ import com.justchat.demo.dto.CustomUserDto;
 import com.justchat.demo.entity.ChatMessage;
 import com.justchat.demo.entity.CustomUser;
 import com.justchat.demo.entity.Group;
+import com.justchat.demo.repository.CustomUserRepository;
 import com.justchat.demo.repository.GroupRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,6 +18,10 @@ public class GroupService {
 
     @Autowired
     UserService userService;
+
+    @Autowired
+    CustomUserRepository customUserRepository;
+
 
     @Autowired
     GroupRepository groupRepository;
@@ -95,23 +100,21 @@ public class GroupService {
 
         Group group = groupRepository.findByName(groupName);
 
-        if (group==null){
+        if (group == null) {
             return false;
         }
         List<CustomUser> users = group.getUsers();
+        CustomUser customUser = customUserRepository.findByLogin(login);
 
 
+        for (int i = 0; i < users.size(); i++) {
+            if (users.get(i).getLogin().equals(login)) {
 
-        for (CustomUser customUser: users
-             ) {
-
-            if (customUser.getLogin().equals(login)){
-
-                users.remove(customUser);
+                users.remove(users.get(i));
                 customUser.getGroup().remove(group);
+
             }
         }
-
 
         return true;
 
@@ -120,24 +123,85 @@ public class GroupService {
     @Transactional
     public boolean deleteGroup(String groupName) {
 
-    Group group = groupRepository.findByName(groupName);
+        Group group = groupRepository.findByName(groupName);
 
 
+        if (group == null) {
+            return false;
+        }
 
-    if (group==null){
-        return false;
-    }
 
+        List<CustomUser> users = group.getUsers();
 
-    List<CustomUser> users = group.getUsers();
-
-        for ( CustomUser user: users
-             ) {
+        for (CustomUser user : users
+        ) {
             user.getGroup().remove(group);
         }
         groupRepository.delete(group);
 
-    return true;
+        return true;
 
+    }
+
+    @Transactional
+    public boolean addUserToGroup(String groupName, String users) {
+        Group group = groupRepository.findByName(groupName);
+
+        String[] userLogins = users.split(",");
+
+
+        List<CustomUser> customUsers = new ArrayList<>();
+
+        for (int i = 0; i < userLogins.length; i++) {
+
+            customUsers.add(customUserRepository.findByLogin(userLogins[i]));
+        }
+
+
+        for (CustomUser user : customUsers
+        ) {
+            group.addUserToGroup(user);
+            user.initGroup(group);
+
+
+        }
+        customUserRepository.saveAll(customUsers);
+        groupRepository.save(group);
+
+        return true;
+    }
+
+    public List<CustomUserDto> getUnsignedUsers(String groupName, String loginCurrentUser) {
+
+        List<CustomUserDto> users = new ArrayList<>();
+        Group group = groupRepository.findByName(groupName);
+        CustomUser customUser = customUserRepository.findByLogin(loginCurrentUser);
+
+        List<CustomUser> savedUsers = new ArrayList<>(userService.getSavedUsers(customUser));
+
+        for (CustomUser user : savedUsers
+        ) {
+            if (user != null) {
+                if (!user.getGroup().contains(group)) {
+                    users.add(new CustomUserDto(user.getLogin(), user.getAvatar()));
+                }
+            }
+        }
+
+
+        return users;
+    }
+
+
+    @Transactional
+    public Group changeGroupName(String groupName, String newName) {
+
+        Group group = groupRepository.findByName(groupName);
+
+
+        group.setName(newName);
+        groupRepository.save(group);
+
+        return group;
     }
 }

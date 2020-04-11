@@ -5,6 +5,7 @@ public class MessageSaver {
     private String message;
     private String to;
     private String from;
+
     private String messageStatus;
 
 
@@ -40,4 +41,6 @@ public class MessageSaver {
     public void setMessageStatus(String messageStatus) {
         this.messageStatus = messageStatus;
     }
+
+
 }

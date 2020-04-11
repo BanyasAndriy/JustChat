@@ -1,25 +1,33 @@
 package com.justchat.demo.dto;
 
-import com.justchat.demo.entity.CustomUser;
 
 public class CustomUserDto {
 
-    private  String avatar;
-    private   String login;
+    private String avatar;
+    private String login;
     private boolean isAdmin;
-
+    private Integer countOfNewMessages;
 
     public CustomUserDto() {
     }
 
-    public CustomUserDto( String login , String avatar , boolean isAdmin) {
+    public CustomUserDto(String login, String avatar, boolean isAdmin) {
         this.avatar = avatar;
         this.login = login;
-        this.isAdmin=isAdmin;
+        this.isAdmin = isAdmin;
     }
 
+    public CustomUserDto(String login, String avatar) {
+        this.avatar = avatar;
+        this.login = login;
 
+    }
 
+    public CustomUserDto(String avatar, String login, Integer countOfNewMessages) {
+        this.avatar = avatar;
+        this.login = login;
+        this.countOfNewMessages = countOfNewMessages;
+    }
 
     public String getAvatar() {
         return avatar;
@@ -43,5 +51,13 @@ public class CustomUserDto {
 
     public void setAdmin(boolean admin) {
         isAdmin = admin;
+    }
+
+    public Integer getCountOfNewMessages() {
+        return countOfNewMessages;
+    }
+
+    public void setCountOfNewMessages(Integer countOfNewMessages) {
+        this.countOfNewMessages = countOfNewMessages;
     }
 }

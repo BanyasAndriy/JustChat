@@ -837,7 +837,7 @@
 <body>
 
 <style>
-    #rightPanel {
+    #rightPanel, #settings-panel, #add-user-panel {
         float: right;
         min-width: 280px;
         max-width: 340px;
@@ -850,19 +850,90 @@
         display: none;
     }
 
-
-    #close-icon {
+    /* #add-user-panel{
+     float: right;
+     min-width: 280px;
+     max-width: 340px;
+     width: 40%;
+     height: 100%;
+     background: #2c3e50;
+     color: #f5f5f5;
+     overflow: hidden;
+     position: relative;
+     display: none;
+ }*/
+    #close-icon, #close-adding-page, #close-setting-page {
         width: 38px;
         margin-left: 87%;
         padding-top: 10px;
     }
 
+    #frame #add-user-panel #search-user-to-adding-to-group input {
+        font-family: "proxima-nova", "Source Sans Pro", sans-serif;
+        padding: 10px 0 10px 46px;
+        width: calc(100% - 25px);
+        border: none;
+        color: black;
+        border-radius: 25px;
+        background: #f7f7f7;
+
+    }
+
+    input#new-name-of-group {
+        font-family: "proxima-nova", "Source Sans Pro", sans-serif;
+        padding: 10px 0 10px 46px;
+        width: calc(100% - 25px);
+        border: none;
+        color: black;
+        border-radius: 25px;
+        background: #f7f7f7;
+        margin-top: 30px;
+        margin-bottom: 22px;
+        margin-left: 12px;
+    }
+
+    #change-name {
+        margin-left: 75px;
+        width: 155px;
+        height: 49px;
+        background-color: inherit;
+        border-radius: 26px;
+        color: white;
+        border-color: white;
+        margin-bottom: 40px;
+    }
+
+    #leave-group {
+        margin-top: 86%;
+        margin-left: 50%;
+        width: 155px;
+        height: 49px;
+        background-color: inherit;
+        border-radius: 26px;
+        color: white;
+        border-color: white;
+
+    }
 
     #frame #rightPanel #contactsOfGroup ul li.contactByGroup {
         position: relative;
         padding: 10px 0 32px 0;
         font-size: 0.9em;
         cursor: pointer;
+    }
+
+    #frame #add-user-panel #user-to-group ul li.contactToGroup {
+        position: relative;
+        padding: 10px 0 32px 0;
+        font-size: 0.9em;
+        cursor: pointer;
+    }
+
+    #frame #add-user-panel #user-to-group ul li.contactToGroup .wrap img {
+        width: 37px;
+        border-radius: 50%;
+        float: left;
+        margin-right: 10px;
     }
 
     #frame #rightPanel #contactsOfGroup ul li.contactByGroup .wrap img {
@@ -876,6 +947,85 @@
         float: right;
         padding-right: 24px;
         color: red;
+    }
+
+    #add-user {
+        float: right;
+
+        width: 82px;
+        height: 36px;
+    }
+
+    #add {
+        margin-left: 75px;
+        width: 190px;
+        height: 49px;
+        background-color: inherit;
+        border-radius: 26px;
+        color: white;
+        border-color: white;
+        margin-bottom: 40px;
+        margin-top: 40px;
+    }
+
+    #drop-group {
+        margin-left: 75px;
+        width: 190px;
+        height: 49px;
+        background-color: inherit;
+        border-radius: 26px;
+        color: white;
+        border-color: white;
+        margin-bottom: 40px;
+        margin-top: 50%;
+        margin-left: 40%;
+    }
+
+
+    #frame #rightPanel #contactsOfGroup {
+        height: 402px;
+        min-height: 172px;
+        max-height: calc(100% - 93px);
+        overflow-y: scroll;
+        overflow-x: hidden;
+    }
+
+    #frame #rightPanel #contactsOfGroup::-webkit-scrollbar {
+        width: 8px;
+        background: transparent;
+    }
+
+    #frame #rightPanel #contactsOfGroup::-webkit-scrollbar-thumb {
+        background-color: rgba(0, 0, 0, 0.3);
+    }
+
+    #frame .content .messages ul li.leftGroup {
+        width: 25%;
+        text-align: center;
+        border-radius: 25px;
+        margin-left: 30%;
+        border: ridge;
+        border-color: red;
+    }
+
+
+    #frame .content .messages ul li.addedtoGroup {
+        width: 25%;
+        text-align: center;
+        border-radius: 25px;
+        margin-left: 30%;
+        border: ridge;
+        border-color: greenyellow;
+
+    }
+
+    #countOfNewMessage{
+        margin-left: 95%;
+        border-radius: 83px;
+        background-color: maroon;
+        text-align: center;
+        width: 19px;
+
     }
 </style>
 
@@ -927,16 +1077,7 @@
         <div id="contacts">
             <ul class="users">
 
-                <!--    <li class="contact active" id="pzd">
-                        <div class="wrap">
-                            <span class="contact-status busy"></span>
-                            <img src="http://emilcarlsson.se/assets/harveyspecter.png" alt="" />
-                            <div class="meta">
-                                <p class="name">Harvey Specter</p>
-                                <p class="preview">Wrong. You take the gun, or you pull out a bigger one. Or, you call their bluff. Or, you do any one of a hundred and forty six other things.</p>
-                            </div>
-                        </div>
-                    </li>-->
+
             </ul>
         </div>
         <div id="bottom-bar">
@@ -963,6 +1104,7 @@
 
                 <i class="fa fa-user-plus" aria-hidden="true" style="padding-right: 20px" id="addUser"></i>
 
+                <i class="fa fa-cogs" aria-hidden="true" style="padding-right: 20px" id="setting"></i>
                 <i class="fa fa-facebook" aria-hidden="true" onclick="visitNetwork('facebook')"></i>
                 <i class="fa fa-twitter" aria-hidden="true" onclick="visitNetwork('twitter')"></i>
                 <i class="fa fa-instagram" aria-hidden="true" onclick="visitNetwork('instagram')"></i>
@@ -995,6 +1137,43 @@
         </div>
 
         <div id="set-group"></div>
+    </div>
+
+    <div id="add-user-panel">
+
+        <img src="https://img.icons8.com/material-sharp/50/000000/cancel.png" id="close-adding-page"/>
+
+
+        <div id="search-user-to-adding-to-group">
+            <label for=""><i class="fa fa-search" aria-hidden="true"></i></label>
+            <input type="text" placeholder="Пошук користувача" id="search-user-to-group"
+                   oninput="searchUnsignedUsers(this.value)"/>
+        </div>
+
+        <div id="user-to-group">
+            <ul class="users-can-be-add-to-group">
+
+            </ul>
+        </div>
+        <button id="add">Добавити користувачів у групу</button>
+
+
+    </div>
+
+    <div id="settings-panel">
+
+        <img src="https://img.icons8.com/material-sharp/50/000000/cancel.png" id="close-setting-page"/>
+
+
+        <div id="new-name">
+
+            <label for="new-name-of-group">Змінити назву групи: </label>
+            <input type="text" placeholder="Нове ім'я групи" id="new-name-of-group"/>
+            <button id="change-name">Змінити назву групи</button>
+        </div>
+        <button id="leave-group">Покинути групу</button>
+
+
     </div>
 </div>
 

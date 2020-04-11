@@ -1,6 +1,7 @@
 package com.justchat.demo.entity;
 
 import javax.persistence.*;
+
 import java.util.*;
 
 @Entity
@@ -18,6 +19,9 @@ public class CustomUser {
     private String facebook;
     private String twitter;
     private String instagram;
+
+
+    private Integer newMessagesCount;
 
     @ManyToMany(fetch = FetchType.EAGER)
     private List<Group> group;
@@ -87,21 +91,6 @@ public class CustomUser {
     }
 
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        CustomUser that = (CustomUser) o;
-        return Objects.equals(login, that.login) &&
-                Objects.equals(avatar, that.avatar);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(login, avatar);
-    }
-
-
 
 
     public String getPassword() {
@@ -149,4 +138,31 @@ public class CustomUser {
     public void initGroup(Group group) {
         this.group.add(group);
     }
+
+
+    public Integer getNewMessagesCount() {
+        return newMessagesCount;
+    }
+
+    public void setNewMessagesCount(Integer newMessagesCount) {
+        this.newMessagesCount = newMessagesCount;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        CustomUser that = (CustomUser) o;
+        return Objects.equals(login, that.login) &&
+                Objects.equals(avatar, that.avatar);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(login, avatar);
+    }
+
+
+
+
 }

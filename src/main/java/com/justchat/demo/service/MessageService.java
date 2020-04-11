@@ -33,10 +33,13 @@ public class MessageService {
     @Autowired
     GroupRepository groupRepository;
 
+
+
+
     @Transactional
     public void saveMessage(CustomUser currentUser, String to, String message, MessageStatus messageStatus) {
 
-
+CustomUser newMessageBot=null;
         Group group = null;
         ChatMessage msg = null;
         if (messageStatus.equals(MessageStatus.publicMessage)) {
@@ -45,7 +48,10 @@ public class MessageService {
             if (group!=null)
             group.addToChats(msg);
         }else {
+
             msg = new ChatMessage(message, to, currentUser, messageStatus);
+
+
         }
             chatMessageRepository.save(msg);
 
@@ -56,6 +62,44 @@ public class MessageService {
     }
 
 
+    /*@Transactional
+    public void saveMessage(CustomUser currentUser, String to, String message, MessageStatus messageStatus) {
+
+        CustomUser newMessageBot = null;
+        Group group = null;
+        ChatMessage msg = null;
+        ChatMessage newMessageNotification = null;
+        if (messageStatus.equals(MessageStatus.publicMessage)) {
+            group = groupService.findGroupByName(to);
+            msg = new ChatMessage(message, to, currentUser, messageStatus, group);
+            if (group != null)
+                group.addToChats(msg);
+        } else {
+
+            if (chatMessageRepository.findByCustomUser(customUserRepository.findByLogin(to))
+                    .contains(new ChatMessage("Нове повідомлення", currentUser.getLogin(), customUserRepository.findByLogin("newMessageBot"), messageStatus))) {
+                msg = new ChatMessage(message, to, currentUser, messageStatus);
+            } else {
+
+                newMessageBot = new CustomUser("newMessageBot");
+                newMessageNotification = new ChatMessage("Нове повідомлення", to, newMessageBot, messageStatus);
+                msg = new ChatMessage(message, to, currentUser, messageStatus);
+            }
+
+
+        }
+        if (newMessageNotification != null) {
+            chatMessageRepository.save(newMessageNotification);
+        }
+        chatMessageRepository.save(msg);
+
+        if (group != null)
+            groupRepository.save(group);
+
+
+    }
+
+*/
     @Transactional
     public List<ChatMessage> getPrivateMessage(String loginFirstUser, String loginSecondUser) {
 
@@ -90,7 +134,7 @@ public class MessageService {
             return o1.getDate().compareTo(o2.getDate());
         });
 
-       
+
    return generalMessage;
 
 

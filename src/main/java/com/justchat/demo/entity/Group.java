@@ -1,8 +1,10 @@
 package com.justchat.demo.entity;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
 import java.util.*;
+
 @Entity(name = "Public_Group")
 public class Group {
 
@@ -13,13 +15,12 @@ public class Group {
     private String ownerLogin;
 
 
-
     @JsonIgnore
     @ManyToMany
     private List<CustomUser> users;
 
 
-    @OneToMany(cascade=CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL)
     private List<ChatMessage> chatMessage;
 
 
@@ -73,6 +74,16 @@ public class Group {
         this.chatMessage = chatMessage;
     }
 
+    public void addToChats(ChatMessage msg) {
+        this.chatMessage.add(msg);
+    }
+    public void addUserToGroup(CustomUser customUser) {
+        this.users.add(customUser);
+    }
+
+
+
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -88,7 +99,4 @@ public class Group {
         return Objects.hash(getName(), getOwnerLogin(), getUsers());
     }
 
-    public void addToChats(ChatMessage msg) {
-        this.chatMessage.add(msg);
-    }
 }

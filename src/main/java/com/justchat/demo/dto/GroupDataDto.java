@@ -2,6 +2,7 @@ package com.justchat.demo.dto;
 
 public class GroupDataDto {
 
+    public String newName;
     private String groupName;
     private String users;//get via ',' ;
 
@@ -20,5 +21,14 @@ public class GroupDataDto {
 
     public void setUsers(String users) {
         this.users = users;
+    }
+
+
+    public String getNewName() {
+        return newName;
+    }
+
+    public void setNewName(String newName) {
+        this.newName = newName;
     }
 }

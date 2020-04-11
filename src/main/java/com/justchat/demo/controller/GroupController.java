@@ -61,30 +61,68 @@ public class GroupController {
     }
 
     @RequestMapping(value = "/delete-user-from-group", method = RequestMethod.POST)
-    public String  deleteUserFromGroup(@RequestBody GroupDataDto groupData) {
+    public String deleteUserFromGroup(@RequestBody GroupDataDto groupData) {
 
 
-        if (groupService.deleteUserFromGroup(groupData.getGroupName(),groupData.getUsers())){
+        if (groupService.deleteUserFromGroup(groupData.getGroupName(), groupData.getUsers())) {
             return "OK";
-        }else return "ERROR";
+        } else return "ERROR";
 
 
     }
 
 
     @RequestMapping(value = "/delete-group", method = RequestMethod.POST)
-    public String  deleteGroup(@RequestBody GroupDataDto groupData) {
+    public String deleteGroup(@RequestBody GroupDataDto groupData) {
 
 
-        if (groupService.deleteGroup(groupData.getGroupName())){
+        if (groupService.deleteGroup(groupData.getGroupName())) {
             return "OK";
-        }else return "ERROR";
+        } else return "ERROR";
+
+
+    }
+
+    @RequestMapping(value = "/add-user-to-group", method = RequestMethod.POST)
+    public String addUserToGroup(@RequestBody GroupDataDto groupData) {
+
+
+       return groupService.addUserToGroup(groupData.getGroupName(), groupData.getUsers())  ? "OK" : "Error";
 
 
     }
 
 
+    @RequestMapping(value = "/get-all-unsigned-users", method = RequestMethod.POST)
+    public List<CustomUserDto> getUnsignedUsers(@RequestBody GroupDataDto groupData) {
 
+        return groupService.getUnsignedUsers(groupData.getGroupName(), getLoginCurrentUser());
+
+    }
+
+
+    @RequestMapping(value = "/change-group-name", method = RequestMethod.POST)
+    public String changeGroupName(@RequestBody GroupDataDto groupData) {
+
+
+
+        Group group =  groupService.changeGroupName(groupData.getGroupName() , groupData.getNewName());
+
+        if (group!=null){
+            return group.getName();
+        }else return "Error";
+
+    }
+
+    @RequestMapping(value = "/leave-group", method = RequestMethod.POST)
+    public String leaveGroup(@RequestBody GroupDataDto groupData) {
+
+
+        return userService.leaveGroup(getLoginCurrentUser(),groupData.getGroupName())? "OK" : "ERROR";
+
+
+
+    }
 
 
 
@@ -95,10 +133,6 @@ public class GroupController {
 
         return login;
     }
-
-
-
-
 
 
 }

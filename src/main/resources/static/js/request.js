@@ -21,7 +21,7 @@ function getAllUsers() {
                         '<span class="contact-status online"></span>\n' +
                         '<img  class = "avarar" src="./image/anonim.png" alt="" />\n' +
                         '<div class="meta">\n' +
-                        '<p class="name">' + response[i].login + '</p>\n' +
+                        '<p class="name">' + response[i].login + '</p><p id="countOfNewMessage" >'+response[i].newMessagesCount+'</p>\n' +
                         '<p class="preview">' + "" + '</p>\n' +
                         '</div>\n' +
                         '</div>\n' +
@@ -151,12 +151,17 @@ function icons() {
     if ($('#choosen').text().trim() === "Groups") {
         $('.fa-user-plus').show();
         $('.fa-users').show();
+
+        $('.fa-cogs').show();
+
         $('.fa-facebook').hide();
         $('.fa-twitter').hide();
         $('.fa-instagram').hide();
 
 
     } else {
+
+        $('.fa-cogs').hide();
 
         $('.fa-user-plus').hide();
         $('.fa-users').hide();
@@ -172,10 +177,156 @@ $(document).ready(function () {
 
 });
 
+
+$(document).ready(function () {
+
+    $('#setting').click(function () {
+        $('#settings-panel').show();
+    });
+});
+
+
+$(document).ready(function () {
+
+    $('#close-setting-page').click(function () {
+        $('#settings-panel').hide();
+
+    });
+});
+
+
+$(document).ready(function () {
+
+    $('#close-adding-page').click(function () {
+        $('#add-user-panel').hide();
+
+    });
+});
+
+
 $(document).ready(function () {
 
     $('#close-icon').click(function () {
         $('#rightPanel').hide();
+
+    });
+});
+
+
+function getUnsignedUsers() {
+    $('.users-can-be-add-to-group').html('');
+    var data = {groupName: $('.chat-login').html()};
+    let select = '';
+    $.ajax({
+        type: "POST",
+        contentType: 'application/json; charset=utf-8',
+        dataType: "json",
+        url: '/get-all-unsigned-users',
+        data: JSON.stringify(data),
+        success: function (response) {
+
+            for (let i = 0; i < response.length; i++) {
+
+
+                if (response[i] != null) {
+
+                    select += '' +
+                        '      <li class="contactToGroup" id="">\n' +
+                        '<div class="wrap">\n' +
+                        '<img  class = "avatar" src="./image/anonim.png" alt="" />\n' +
+                        '<div class="meta">\n' +
+                        '<p class="user-login">' + response[i].login + '<input type="checkbox" id="add-user" value="' + response[i].login + '"></p>\n' +
+                        '</div>\n' +
+                        '</div>\n' +
+                        '</li>\n';
+
+
+                    $('.users-can-be-add-to-group').html(select);
+
+
+                }
+            }
+
+        }
+    });
+
+}
+
+
+jQuery(document).ready(function ($) {
+
+    $('#add').click(function () {
+
+
+        //создаём массив для значений флажков
+        var checkboxes = [];
+        $('input:checkbox:checked').each(function () {
+
+            checkboxes.push(this.value);
+        });
+        /*объединяем массив в строку с разделителем-запятой. Но лучше подобные вещи хранить в массиве. Для наглядности - вывод в консоль.*/
+        console.log(checkboxes.join(','));
+
+        groupDate = {
+            users: checkboxes.join(','),
+            groupName: $('.chat-login').html()
+        };
+
+        $.ajax({
+            type: "POST",
+            contentType: 'application/json; charset=utf-8',
+            dataType: 'text',
+            data: JSON.stringify(groupDate),
+            url: '/add-user-to-group',
+
+            success: function (response) {
+                $('#add-user-panel').hide();
+
+                getUsersFromGroup();
+                $('#rightPanel').show();
+
+
+
+                let msg ="Користувач < " +  checkboxes.join(',') +" > доданий до групи ";
+
+                let whom = $('.chat-login').html();
+                let from ='AddedGroupBot';
+                let messageStatus = $('#choosen').text().trim();
+                /!* sendMessage(msg, whom, from, messageStatus);*!/
+                sendMessage(msg,whom,from,messageStatus);
+
+
+
+
+
+
+
+            },
+            error: function (response, textStatus) {
+
+
+            }
+        });
+
+
+
+    })
+});
+
+
+$(document).ready(function () {
+
+    $('#addUser').click(function () {
+        $('#add-user-panel').show();
+
+
+        getUnsignedUsers();
+
+
+        /*
+
+
+        addUserToGroup();*/
     });
 });
 
@@ -195,16 +346,17 @@ function getUsersFromGroup() {
 
             var select = '';
 
-            let isAdmin=false;
+            let isAdmin = false;
 
             for (let i = 0; i < response.length; i++) {
 
                 if (response[i] != null) {
                     if ($('#current-user').html() === response[i].login && response[i].admin === true) {
 
-                        isAdmin=true;
+                        isAdmin = true;
 
-                    }}
+                    }
+                }
             }
 
 
@@ -217,14 +369,14 @@ function getUsersFromGroup() {
                             '<div class="wrap">\n' +
                             '<img  class = "avatar" src="./image/anonim.png" alt="" />\n' +
                             '<div class="meta">\n' +
-                            '<p class="user-name">' + response[i].login   + '<span id="delete-user" >X<span></p>\n' +
+                            '<p class="user-name">' + response[i].login + '<span id="delete-user" >X<span></p>\n' +
                             '</div>\n' +
                             '</div>\n' +
                             '</li>\n';
 
 
                         $('.usersOfGroup').html(select);
-                    }else {
+                    } else {
                         select += '' +
                             '      <li class="contactByGroup" id="">\n' +
                             '<div class="wrap">\n' +
@@ -240,7 +392,7 @@ function getUsersFromGroup() {
                     }
                 }
             }
-            if (isAdmin){
+            if (isAdmin) {
                 $('#set-group').html('<button id="drop-group">Видалити групу</button>');
             }
 
@@ -254,26 +406,76 @@ $(document).ready(function () {
 
         $('#rightPanel').show();
 
-
-
-
-
         getUsersFromGroup();
+
 
     });
 });
 
+
+$(document).ready(function () {
+
+    $('#change-name').click(function () {
+
+
+        let data = {
+            newName: $('#new-name-of-group').val(),
+            groupName: $('.chat-login').html()
+        };
+
+        $.ajax({
+            type: "POST",
+            contentType: 'application/json; charset=utf-8',
+            dataType: "text",
+            url: '/change-group-name',
+            data: JSON.stringify(data),
+            success: function (response) {
+
+                if (response !== "Error") {
+                    $('.chat-login').html(response);
+                    getAllGroups();
+                }
+
+            }
+        });
+    });
+});
+
+
+$(document).ready(function () {
+
+    $('#leave-group').click(function () {
+
+
+        let data = {
+            groupName: $('.chat-login').html()
+        };
+
+        $.ajax({
+            type: "POST",
+            contentType: 'application/json; charset=utf-8',
+            dataType: "text",
+            url: '/leave-group',
+            data: JSON.stringify(data),
+            success: function (response) {
+if (response==="OK")
+    window.location = 'http://localhost:8080';
+
+            }
+        });
+    });
+});
 
 
 
 $(function () {
     $(document).on('click', '#delete-user', function () {
 
-let value  = $(this).closest(".user-name").html();
+        let value = $(this).closest(".user-name").html();
 
-let userName =value.substr(0,value.lastIndexOf('<span id="delete-user">'));
+        let userName = value.substr(0, value.lastIndexOf('<span id="delete-user">'));
 
-var data =  { groupName : $('.chat-login').html() , users :userName};
+        var data = {groupName: $('.chat-login').html(), users: userName};
 
         $.ajax({
             type: "POST",
@@ -283,15 +485,27 @@ var data =  { groupName : $('.chat-login').html() , users :userName};
             data: JSON.stringify(data),
             success: function (response) {
 
-                    getUsersFromGroup();
+                getUsersFromGroup();
+
+
+
+                let msg ="Користувач < " +  userName +" > був видалений з групи!";
+
+                let whom = $('.chat-login').html();
+                let from ='DeletedGroupBot';
+                let messageStatus = $('#choosen').text().trim();
+                /* sendMessage(msg, whom, from, messageStatus);*/
+                leaveGroup(msg,whom,from,messageStatus);
+
+
+
+
+
 
             }
         });
     })
 });
-
-
-
 
 
 $(function () {
@@ -327,8 +541,7 @@ $(function () {
 
         data = {login: login, messageStatus: messageStatus};
 
-
-        $.ajax({
+       /* $.ajax({
             type: "POST",
             contentType: 'application/json; charset=utf-8',
             dataType: "json",
@@ -388,7 +601,8 @@ $(function () {
 
 
             }
-        });
+        });*/
+        getHistory($('#current-user').html(), login);
     })
 });
 
@@ -412,7 +626,8 @@ function getHistory(from, to) {
 
     data = {
         login: to,
-        from: from, messageStatus: $('#choosen').text().trim()
+        from: from,
+        messageStatus: $('#choosen').text().trim()
     };
 
 
@@ -446,13 +661,35 @@ function getHistory(from, to) {
                     $('.msg').html(select);
                 }
             } else if ($('#choosen').text().trim() === "Groups") {
+
                 for (let i = 0; i < response.length; i++) {
 
-                    console.log(response[i].from + "  : " + $('#current-user').html());
-                    console.log(response[i].from === $('#current-user').html());
+
+                    if (response[i].from === 'LeftGroupBot') {
+
+                        select += '' + '<li class="leftGroup">\n' +
+                            '<p class="sendMessages">' + response[i].message + '</p>\n' +
+                            '</li>\n';
 
 
-                    if (response[i].from === $('#current-user').html()) {
+                    } else if (response[i].from === 'AddedGroupBot')
+                    {
+                        select += '' + '<li class="addedtoGroup">\n' +
+                            '<p class="sendMessages">' + response[i].message + '</p>\n' +
+                            '</li>\n';
+
+
+
+                    }else if(response[i].from === 'DeletedGroupBot'){
+                        select += '' + '<li class="leftGroup">\n' +
+                            '<p class="sendMessages">' + response[i].message + '</p>\n' +
+                            '</li>\n';
+
+
+                    }
+
+                    else  if (response[i].from === $('#current-user').html()) {
+
 
                         select += '' + '<li class="sent">\n' +
                             '<img src="./image/anonim.png" alt="" />\n' +
@@ -460,6 +697,7 @@ function getHistory(from, to) {
                             '</li>\n';
 
                     } else {
+
                         select += '' + '<li class="replies">\n' +
                             '<img src="./image/anonim.png" alt="" />\n' +
                             '<p class="sendMessages">' + response[i].message + '</p>\n' +
@@ -549,6 +787,63 @@ function visitNetwork(network) {
 
         }
     });
+
+
+}
+
+
+function searchUnsignedUsers(value) {
+
+
+    if (value === "") {
+        $('.users-can-be-add-to-group').html('');
+        getUnsignedUsers();
+    } else {
+        $('.users-can-be-add-to-group').html('');
+
+        var data = {users: value, groupName: $('.chat-login').html()};
+
+        $.ajax({
+            type: "POST",
+            contentType: 'application/json; charset=utf-8',
+            dataType: "json",
+            data: JSON.stringify(data),
+            url: '/search-unsigned-users',
+
+            success: function (response) {
+
+                let select = '';
+                for (let i = 0; i < response.length; i++) {
+
+
+                    if (response[i] != null) {
+
+                        select += '' +
+                            '      <li class="contactToGroup" id="">\n' +
+                            '<div class="wrap">\n' +
+                            '<img  class = "avatar" src="./image/anonim.png" alt="" />\n' +
+                            '<div class="meta">\n' +
+                            '<p class="user-login">' + response[i].login + '<input type="checkbox" id="add-user" value="' + response[i].login + '"></p>\n' +
+                            '</div>\n' +
+                            '</div>\n' +
+                            '</li>\n';
+
+
+                        $('.users-can-be-add-to-group').html(select);
+
+
+                    }
+                }
+
+            },
+            error: function (response, textStatus) {
+                alert("I am in error");
+
+            }
+        });
+
+
+    }
 
 
 }
@@ -652,36 +947,28 @@ $(function () {
     $(document).on('click', '#drop-group', function () {
 
 
-
-let data={groupName : $('.chat-login').html()};
+        let data = {groupName: $('.chat-login').html()};
 
         $.ajax({
             type: "POST",
-            contentType : 'application/json; charset=utf-8',
-            dataType : "text",
+            contentType: 'application/json; charset=utf-8',
+            dataType: "text",
             url: '/delete-group',
-            data:JSON.stringify(data),
-            success :function(response) {
+            data: JSON.stringify(data),
+            success: function (response) {
 
-            if (response==="OK"){
-                window.location = 'http://localhost:8080';
-            }
+                if (response === "OK") {
+                    window.location = 'http://localhost:8080';
+                }
 
 
             }
         });
 
 
-
-
-
     })
 
 });
-
-
-
-
 
 
 /*
@@ -731,6 +1018,39 @@ jQuery(document).ready(function($){
 */
 
 
+
+$(function () {
+    $(document).on('click', '#leave-group', function () {
+
+        let msg ="Користувач < " +  $('#current-user').html() +" > покинув групу ";
+
+        let whom = $('.chat-login').html();
+        let from ='LeftGroupBot';
+        let messageStatus = $('#choosen').text().trim();
+       /* sendMessage(msg, whom, from, messageStatus);*/
+leaveGroup(msg,whom,from,messageStatus);
+
+    })
+});
+
+/*
+$(function () {
+    $(document).on('click', '#add', function () {
+
+        let msg ="Користувач < " +  $('#current-user').html() +" > доданий до групи ";
+
+        let whom = $('.chat-login').html();
+        let from ='AddedGroupBot';
+        let messageStatus = $('#choosen').text().trim();
+        /!* sendMessage(msg, whom, from, messageStatus);*!/
+        sendMessage(msg,whom,from,messageStatus);
+
+    })
+});
+
+*/
+
+
 //web sockets
 
 function connect() {
@@ -746,19 +1066,13 @@ function connect() {
 }
 
 function draw(text) {
-    //message = $(".message-input input").val();
-
-
     if (text === '') {
         return false;
     }
-
     if ($.trim(text) == '') {
         return false;
     }
-
     getHistory($('#current-user').html(), $('.chat-login').html());
-
 
     $('.message-input input').val(null);
     /*$('.contact.active .preview').html('<span>You: </span>' + text);*/
@@ -788,4 +1102,16 @@ function sendMessage(message, whom, from, messageStatus) {
 
 }
 
+function leaveGroup(message, whom, from, messageStatus) {
+    if (message === "") {
+        return false;
+    }
 
+    stompClient.send("/app/message", {}, JSON.stringify({
+        'message': message,
+        'to': whom,
+        'from': from,
+        'messageStatus': messageStatus
+    }));
+
+}

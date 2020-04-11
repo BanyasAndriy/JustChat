@@ -1,116 +1,104 @@
 package com.justchat.demo.controller;
 
 import com.justchat.demo.dto.CustomUserDto;
+import com.justchat.demo.dto.GroupDataDto;
 import com.justchat.demo.dto.MessageSender;
 import com.justchat.demo.dto.NetworkData;
-import com.justchat.demo.entity.ChatMessage;
 import com.justchat.demo.entity.CustomUser;
 import com.justchat.demo.service.MessageService;
 import com.justchat.demo.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Controller;
+
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
+
 
 import java.util.*;
+
 @RestController
 public class UserController {
 
 
-
-@Autowired
+    @Autowired
     MessageService messageService;
 
-@Autowired
+    @Autowired
     UserService userService;
 
-    @RequestMapping(value = "/get-all-users" ,method = RequestMethod.POST)
-    public Set<CustomUser> getAllUsers(){
+    @RequestMapping(value = "/get-all-users", method = RequestMethod.POST)
+    public Set<CustomUser> getAllUsers() {
 
-        CustomUser currentUser =userService.getUserByLogin(getLoginCurrentUser());
-        Set<CustomUser> customUsers =userService.getSavedUsers(currentUser);
-
+        CustomUser currentUser = userService.getUserByLogin(getLoginCurrentUser());
 
 
-return  customUsers;
+        return userService.getSavedUsers(currentUser);
     }
 
 
-
-    @RequestMapping(value = "/search-users" ,method = RequestMethod.POST)
-    public Set<CustomUser> searchUsers(@RequestBody MessageSender user){
-
-
-        CustomUser currentUser =userService.getUserByLogin(getLoginCurrentUser());
+    @RequestMapping(value = "/search-users", method = RequestMethod.POST)
+    public Set<CustomUser> searchUsers(@RequestBody MessageSender user) {
 
 
-        Set<CustomUser> searchedUsers = userService.searchUser(user.getLogin());
+        return userService.searchUser(user.getLogin());
+
+    }
+
+    @RequestMapping(value = "/search-unsigned-users", method = RequestMethod.POST)
+    public Set<CustomUserDto> searchUnsignedUsers(@RequestBody GroupDataDto data) {
 
 
-        return searchedUsers;
+        Set<CustomUserDto> users = new LinkedHashSet<>();
+        users = userService.searchUsersToAddingToGroup(data.getUsers(), data.getGroupName());
+
+        return users;
 
     }
 
 
-
-
-
-
-
-
-
-    @RequestMapping(value = "/get-current-user" ,method = RequestMethod.POST)
-    public CustomUser getCurrentUser(){
-        CustomUser customUsers =userService.getUserByLogin(getLoginCurrentUser());
-        return customUsers;
+    @RequestMapping(value = "/get-current-user", method = RequestMethod.POST)
+    public CustomUser getCurrentUser() {
+        return userService.getUserByLogin(getLoginCurrentUser());
 
     }
 
-    @RequestMapping(value = "/save-network" ,method = RequestMethod.POST)
-    public String saveNetwork(@RequestBody NetworkData network){
-        CustomUser customUsers =userService.getUserByLogin(getLoginCurrentUser());
+    @RequestMapping(value = "/save-network", method = RequestMethod.POST)
+    public String saveNetwork(@RequestBody NetworkData network) {
+        CustomUser customUsers = userService.getUserByLogin(getLoginCurrentUser());
 
-if (network.getNameOfTheNetwork().toLowerCase().trim().equals("facebook")){
-    customUsers.setFacebook(network.getUrlOfTheNetwork());
-}else if (network.getNameOfTheNetwork().toLowerCase().trim().equals("twitter")){
-    customUsers.setTwitter((network.getUrlOfTheNetwork()));
-}else customUsers.setInstagram(network.getUrlOfTheNetwork());
+        if (network.getNameOfTheNetwork().toLowerCase().trim().equals("facebook")) {
+            customUsers.setFacebook(network.getUrlOfTheNetwork());
+        } else if (network.getNameOfTheNetwork().toLowerCase().trim().equals("twitter")) {
+            customUsers.setTwitter((network.getUrlOfTheNetwork()));
+        } else customUsers.setInstagram(network.getUrlOfTheNetwork());
 
-userService.saveUser(customUsers);
+        userService.saveUser(customUsers);
 
         return "OK";
 
     }
 
 
-
-    @RequestMapping(value = "/get-all-networks" ,method = RequestMethod.POST)
-    public List<String> getAllNetworks(){
-        CustomUser customUsers =userService.getUserByLogin(getLoginCurrentUser());
+    @RequestMapping(value = "/get-all-networks", method = RequestMethod.POST)
+    public List<String> getAllNetworks() {
+        CustomUser customUsers = userService.getUserByLogin(getLoginCurrentUser());
         return userService.getAllNetworks(customUsers);
 
     }
 
 
-    @RequestMapping(value = "/visit-network" ,method = RequestMethod.POST)
-    public String visitNetworks(@RequestBody NetworkData data){
+    @RequestMapping(value = "/visit-network", method = RequestMethod.POST)
+    public String visitNetworks(@RequestBody NetworkData data) {
 
-        String url  = userService.getNetworkUrl(data.getOwner() , data.getNameOfTheNetwork());
-
-        return url ;
+        return userService.getNetworkUrl(data.getOwner(), data.getNameOfTheNetwork());
 
     }
 
 
-
     private String getLoginCurrentUser() {
         Authentication loggedInUser = SecurityContextHolder.getContext().getAuthentication();
-        String login = loggedInUser.getName();
 
-
-        return login;
+        return loggedInUser.getName();
     }
 
 }
