@@ -51,8 +51,11 @@ public class ChatController {
             currentUser = userRepository.save(new CustomUser("DeletedGroupBot"));
         }
 
+/*
 
-        userService.saveUser(to);
+        if (to!=null)
+       userService.saveUser(to);
+*/
 
 
         MessageStatus messageStatus = messageSaver.getMessageStatus().trim().toLowerCase().equals("groups") ? MessageStatus.publicMessage : MessageStatus.privateMessage;

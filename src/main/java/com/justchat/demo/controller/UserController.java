@@ -4,6 +4,7 @@ import com.justchat.demo.dto.CustomUserDto;
 import com.justchat.demo.dto.GroupDataDto;
 import com.justchat.demo.dto.MessageSender;
 import com.justchat.demo.dto.NetworkData;
+import com.justchat.demo.entity.ChatMessage;
 import com.justchat.demo.entity.CustomUser;
 import com.justchat.demo.service.MessageService;
 import com.justchat.demo.service.UserService;
@@ -27,12 +28,26 @@ public class UserController {
     UserService userService;
 
     @RequestMapping(value = "/get-all-users", method = RequestMethod.POST)
-    public Set<CustomUserDto> getAllUsers() {
+    public List<CustomUserDto> getAllUsers() {
 
         CustomUser currentUser = userService.getUserByLogin(getLoginCurrentUser());
 
+List<CustomUserDto> users =userService.getSavedUsers(currentUser);
 
-        return userService.getSavedUsers(currentUser);
+        for (CustomUserDto usr: users
+             ) {
+            List<ChatMessage> msgs = messageService.getPrivateMessage(currentUser.getLogin(),usr.getLogin());
+            if (msgs.size()>0) {
+                usr.setLastMessage(msgs.get(msgs.size() - 1).getMessage());
+                usr.setLastMessageFrom(msgs.get(msgs.size() - 1).getFrom());
+            }else {
+                usr.setLastMessage("");
+                usr.setLastMessageFrom("");
+            }
+        }
+
+
+        return users;
     }
 
 

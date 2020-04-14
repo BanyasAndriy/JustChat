@@ -21,8 +21,8 @@ function getAllUsers() {
                         '<span class="contact-status online"></span>\n' +
                         '<img  class = "avarar" src="./image/anonim.png" alt="" />\n' +
                         '<div class="meta">\n' +
-                        '<p class="name">' + response[i].login + '</p><p id="countOfNewMessage" >'+response[i].countOfNewMessages+'</p>\n' +
-                        '<p class="preview">' + "" + '</p>\n' +
+                        '<p class="name">' + response[i].login + '</p><p id="countOfNewMessage" >' + response[i].countOfNewMessages + '</p>\n' +
+                        '<p class="preview">' + '<span>' + response[i].lastMessageFrom + '</span>' + response[i].lastMessage + '</p>\n' +
                         '</div>\n' +
                         '</div>\n' +
                         '</li>\n';
@@ -32,6 +32,7 @@ function getAllUsers() {
 
                 }
             }
+
 
         },
         error: function (response, textStatus) {
@@ -66,8 +67,8 @@ function getAllGroups() {
                     '<span class="contact-status online"></span>\n' +
                     '<img  class = "avarar" src="./image/anonim.png" alt="" />\n' +
                     '<div class="meta">\n' +
-                    '<p class="name">' + response[i].name + '</p>\n' +
-                    '<p class="preview">' + "" + '</p>\n' +
+                    '<p class="name">' + response[i].groupName + '</p>\n' +
+                    '<p class="preview">' + '<span>' + response[i].lastMessageFrom + '</span>' + response[i].lastMessage + '</p>\n' +
                     '</div>\n' +
                     '</div>\n' +
                     '</li>\n';
@@ -498,10 +499,11 @@ $(function () {
 $(function () {
     $(document).on('click', '.contact', function () {
 
-        connect();
+
+        $('.content').show();
+
         jQuery('.contact').removeClass('active');
         jQuery(this).addClass('active');
-
 
         icons();
 
@@ -530,9 +532,10 @@ $(function () {
 
 
         getHistory($('#current-user').html(), login);
-      //  clearNotification($('#current-user').html(),login);
-        clearNotification($('#current-user').html(),$('.chat-login').html());
-
+        //  clearNotification($('#current-user').html(),login);
+        if ($('#choosen').text().trim() === "Contacts") {
+            clearNotification($('#current-user').html(), $('.chat-login').html());
+        }/*else clearNotificationInGroup($('.chat-login').html());*/
     })
 });
 
@@ -555,7 +558,7 @@ $(function () {
 function clearNotification(from, to) {
 
 
-   let  data = {
+    let data = {
         login: to,
         from: from,
     };
@@ -567,13 +570,32 @@ function clearNotification(from, to) {
         data: JSON.stringify(data),
         success: function (response) {
 
-
-
-                   }
+        }
     });
 
 }
 
+
+/*
+function clearNotificationInGroup(nameOfGroup) {
+
+
+    let  data = {
+        groupName: nameOfGroup,
+    };
+    $.ajax({
+        type: "POST",
+        contentType: 'application/json; charset=utf-8',
+        dataType: "text",
+        url: '/clear-notification-in-group',
+        data: JSON.stringify(data),
+        success: function (response) {
+
+        }
+    });
+
+}
+*/
 
 
 function getHistory(from, to) {
@@ -598,18 +620,17 @@ function getHistory(from, to) {
 
             if ($('#choosen').text().trim() === "Contacts") {
                 for (let i = 0; i < response.length; i++) {
-                    if (response[i].message==="Нове повідомлення" && response[i].from!==$('#current-user').html()){
+                    if (response[i].message === "Нове повідомлення" && response[i].from !== $('#current-user').html()) {
 
                         select += '' + '<li class="addedtoGroup">\n' +
                             '<p class="sendMessages">' + response[i].message + '</p>\n' +
                             '</li>\n';
 
 
-                    }else if (response[i].message==="Нове повідомлення" && response[i].from===$('#current-user').html()){
+                    } else if (response[i].message === "Нове повідомлення" && response[i].from === $('#current-user').html()) {
                         ;
 
-                    }else
-                    if (response[i].to === $('#current-user').html()) {
+                    } else if (response[i].to === $('#current-user').html()) {
 
                         select += '' + '<li class="replies">\n' +
                             '<img src="./image/anonim.png" alt="" />\n' +
@@ -628,8 +649,17 @@ function getHistory(from, to) {
 
                 for (let i = 0; i < response.length; i++) {
 
+                    if (response[i].message === "Нове повідомлення" && response[i].from !== $('#current-user').html()) {
 
-                    if (response[i].from === 'LeftGroupBot') {
+                        select += '' + '<li class="addedtoGroup">\n' +
+                            '<p class="sendMessages">' + response[i].message + '</p>\n' +
+                            '</li>\n';
+
+
+                    } else if (response[i].message === "Нове повідомлення" && response[i].from === $('#current-user').html()) {
+                        ;
+
+                    } else if (response[i].from === 'LeftGroupBot') {
 
                         select += '' + '<li class="leftGroup">\n' +
                             '<p class="sendMessages">' + response[i].message + '</p>\n' +
@@ -673,7 +703,9 @@ function getHistory(from, to) {
             }
 
 
-
+            /*    $('.contact.active .preview').html('<span>'+ response[response.length-1].from+ '</span>' + response[response.length-1].message);
+            */
+            $(".messages").animate({scrollTop: 9999}, "fast");
         }
     });
 }
@@ -814,45 +846,7 @@ function searchUsers(value) {
 
     if (value === "") {
         $('.users').html("");
-        $.ajax({
-            type: "POST",
-            contentType: 'application/json; charset=utf-8',
-            dataType: "json",
-            url: '/get-all-users',
-
-            success: function (response) {
-
-                let select = "";
-
-                console.log(response.length);
-
-                for (let i = 0; i < response.length; i++) {
-
-                    if (response[i] != null) {
-                        select += '' +
-                            '      <li class="contact" id="pzd">\n' +
-                            '<div class="wrap">\n' +
-                            '<span class="contact-status online"></span>\n' +
-                            '<img  class = "avarar" src="./image/anonim.png" alt="" />\n' +
-                            '<div class="meta">\n' +
-                            '<p class="name">' + response[i].login + '</p>\n' +
-                            '<p class="preview">' + "" + '</p>\n' +
-                            '</div>\n' +
-                            '</div>\n' +
-                            '</li>\n';
-
-
-                        $('.users').html(select);
-                    }
-
-                }
-
-            },
-            error: function (response, textStatus) {
-                alert("I am in error");
-
-            }
-        });
+        getAllUsers()
     } else $('.users').html("");
 
 
@@ -869,7 +863,6 @@ function searchUsers(value) {
 
                 let select = "";
 
-                console.log(response.length);
 
                 for (let i = 0; i < response.length; i++) {
 
@@ -1020,27 +1013,145 @@ function connect() {
         console.log("connected: " + frame);
         stompClient.subscribe('/chat/messages', function (response) {
             var data = JSON.parse(response.body);
-            draw(data.message);
+            console.log(data);
+
+            draw(data);
         });
     });
 }
 
+$(document).ready(function () {
+    connect();
+
+});
+
+
+function drawMessage(response) {
+    var select = $('.msg').html();
+
+    if ($('#choosen').text().trim() === "Contacts") {
+
+        if (response.to === $('.chat-login').html() && response.from === $('#current-user').html() ||
+            response.to === $('#current-user').html() && response.from === $('.chat-login').html()) {
+            if (response.message === "Нове повідомлення" && response.from !== $('#current-user').html()) {
+
+                select += '' + '<li class="addedtoGroup">\n' +
+                    '<p class="sendMessages">' + response.message + '</p>\n' +
+                    '</li>\n';
+
+
+            } else if (response.message === "Нове повідомлення" && response.from === $('#current-user').html()) {
+                ;
+
+            } else if (response.to === $('#current-user').html()) {
+
+                select += '' + '<li class="replies">\n' +
+                    '<img src="./image/anonim.png" alt="" />\n' +
+                    '<p class="sendMessages">' + response.message + '</p>\n' +
+                    '</li>\n';
+
+            } else {
+                select += '' + '<li class="sent">\n' +
+                    '<img src="./image/anonim.png" alt="" />\n' +
+                    '<p class="sendMessages">' + response.message + '</p>\n' +
+                    '</li>\n';
+            }
+
+        }
+    } else if ($('#choosen').text().trim() === "Groups") {
+
+        if (response.to === $('.chat-login').html()) {
+            if (response.message === "Нове повідомлення" && response.from !== $('#current-user').html()) {
+
+                select += '' + '<li class="addedtoGroup">\n' +
+                    '<p class="sendMessages">' + response.message + '</p>\n' +
+                    '</li>\n';
+
+
+            } else if (response.message === "Нове повідомлення" && response.from === $('#current-user').html()) {
+                ;
+
+            } else if (response.from === 'LeftGroupBot') {
+
+                select += '' + '<li class="leftGroup">\n' +
+                    '<p class="sendMessages">' + response.message + '</p>\n' +
+                    '</li>\n';
+
+
+            } else if (response.from === 'AddedGroupBot') {
+                select += '' + '<li class="addedtoGroup">\n' +
+                    '<p class="sendMessages">' + response.message + '</p>\n' +
+                    '</li>\n';
+
+
+            } else if (response.from === 'DeletedGroupBot') {
+                select += '' + '<li class="leftGroup">\n' +
+                    '<p class="sendMessages">' + response.message + '</p>\n' +
+                    '</li>\n';
+
+
+            } else if (response.from === $('#current-user').html()) {
+
+
+                select += '' + '<li class="sent">\n' +
+                    '<img src="./image/anonim.png" alt="" />\n' +
+                    '<p class="sendMessages">' + response.message + '</p>\n' +
+                    '</li>\n';
+
+            } else {
+
+                select += '' + '<li class="replies">\n' +
+                    '<img src="./image/anonim.png" alt="" />\n' +
+                    '<p class="sendMessages">' + response.message + '</p>\n' +
+                    '</li>\n';
+            }
+
+
+        }
+    }
+    $('.msg').html(select);
+
+}
+
 function draw(text) {
+
     if (text === '') {
         return false;
     }
-    if ($.trim(text) == '') {
+    if ($.trim(text) === '') {
         return false;
     }
-    getHistory($('#current-user').html(), $('.chat-login').html());
 
+    drawMessage(text);
     $('.message-input input').val(null);
-    /*$('.contact.active .preview').html('<span>You: </span>' + text);*/
-    // $(".messages").animate({ scrollTop: $(document).height() }, "fast");
+    $(".messages").animate({scrollTop: 9999}, "fast");
+    if (text.from === $('#current-user').html()) {
+        $('.contact.active .preview').html('<span>' + text.from + ' : ' + '</span>' + text.message);
+    }
 
-    /*    var el = document.getElementsByClassName('.message');
-        el.scrollTop = Math.ceil( el.scrollHeight -  el.clientHeight);*/
+    let count = 0;
+    if ($('#choosen').text().trim() === "Groups") {
 
+
+   $("li.contact .wrap .meta .name ").each(function () {
+
+        if ($(this).html() === text.to) {
+            $(this).siblings('.preview').html('<span>' + text.from + ' : ' + '</span>' + text.message);
+        }
+    });
+
+    }else  {
+
+
+        $("li.contact .wrap .meta .name ").each(function () {
+
+            if ($(this).html() === text.from && $('#current-user').html()!=text.from) {
+                $(this).siblings('.preview').html('<span>' + text.from + ' : ' + '</span>' + text.message);
+            }
+        });
+
+
+    }
 
 }
 

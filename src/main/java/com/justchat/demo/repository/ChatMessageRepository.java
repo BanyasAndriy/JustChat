@@ -19,6 +19,9 @@ public interface ChatMessageRepository extends JpaRepository<ChatMessage,Long> {
 
     List<ChatMessage> findByMessageStatus(MessageStatus privateMessage);
     List<ChatMessage> deleteAllByFromAndToAndMessage(String from , String to ,String message);
+    List<ChatMessage> findByTo( String to );
+    List<ChatMessage> deleteAllByToAndMessage( String to ,String message);
+
 
     List<ChatMessage> findByFromAndToAndMessage(String loginFirstUser, String loginSecondUser, String нове_повідомлення);
 }

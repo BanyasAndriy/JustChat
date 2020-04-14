@@ -1,12 +1,18 @@
 package com.justchat.demo.dto;
 
 
-public class CustomUserDto {
+import com.justchat.demo.entity.CustomUser;
+
+import java.util.Comparator;
+
+public class CustomUserDto  {
 
     private String avatar;
     private String login;
     private boolean isAdmin;
     private Integer countOfNewMessages;
+    private String lastMessage;
+    private String lastMessageFrom;
 
     public CustomUserDto() {
     }
@@ -59,5 +65,21 @@ public class CustomUserDto {
 
     public void setCountOfNewMessages(Integer countOfNewMessages) {
         this.countOfNewMessages = countOfNewMessages;
+    }
+
+    public String getLastMessage() {
+        return lastMessage;
+    }
+
+    public void setLastMessage(String lastMessage) {
+        this.lastMessage = lastMessage;
+    }
+
+    public String getLastMessageFrom() {
+        return lastMessageFrom;
+    }
+
+    public void setLastMessageFrom(String lastMessageFrom) {
+        this.lastMessageFrom = lastMessageFrom;
     }
 }

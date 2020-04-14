@@ -1,6 +1,7 @@
 package com.justchat.demo.service;
 
 import com.justchat.demo.dto.CustomUserDto;
+import com.justchat.demo.dto.GroupDataDto;
 import com.justchat.demo.entity.ChatMessage;
 import com.justchat.demo.entity.CustomUser;
 import com.justchat.demo.entity.Group;
@@ -30,7 +31,8 @@ public class UserService {
     @Autowired
     GroupRepository groupRepository;
 
-
+@Autowired
+MessageService messageService;
     @Transactional
     public List<CustomUser> getAllUser() {
         return customUserRepository.findAll();
@@ -133,7 +135,7 @@ public class UserService {
 
 
     @Transactional
-    public Set<CustomUserDto> getSavedUsers(CustomUser currentUser) {
+    public List<CustomUserDto> getSavedUsers(CustomUser currentUser) {
 
         Set<CustomUser> customUsers = new HashSet<>();
         List<ChatMessage> allMessages = chatMessageRepository.findByMessageStatus(MessageStatus.privateMessage);
@@ -157,8 +159,8 @@ public class UserService {
         }
 
         List<CustomUser> preResult = new ArrayList<>(customUsers);
-        Set<CustomUserDto> result = new HashSet<>();
 
+        List<CustomUserDto> result = new ArrayList<>();
 
         Integer indexOfStartNewMsg = null;
         for (int i = 0; i < preResult.size(); i++) {
@@ -175,15 +177,19 @@ public class UserService {
             }
 
             if (indexOfStartNewMsg != null) {
-                newMessageCount = chatMessageRepository.findByCustomUserAndTo(preResult.get(i),currentUser.getLogin()).size() - indexOfStartNewMsg;
+                int allCountOfMessage=chatMessageRepository.findByCustomUserAndTo(preResult.get(i),currentUser.getLogin()).size();
+                newMessageCount = allCountOfMessage - indexOfStartNewMsg;
             }
-            result.add(new CustomUserDto(preResult.get(i).getAvatar(), preResult.get(i).getLogin(), newMessageCount!=0?newMessageCount-1:0));
+               if (preResult.get(i)!=null)
+            result.add(new CustomUserDto(preResult.get(i).getAvatar(), preResult.get(i).getLogin(), newMessageCount));
         }
 
-
-
-
-
+        result.sort((o1, o2) -> {
+            if (o1.getCountOfNewMessages() == null || o2.getCountOfNewMessages() == null)
+                return 0;
+            return o1.getCountOfNewMessages().compareTo(o2.getCountOfNewMessages());
+        });
+        Collections.reverse(result);
         return result;
 
     }
@@ -198,12 +204,24 @@ public class UserService {
     }
 
     @Transactional
-    public Set<Group> getSavedGroups(CustomUser currentUser) {
+    public List<GroupDataDto> getSavedGroups(CustomUser currentUser) {
 
-        Set<Group> groups = new HashSet<>(currentUser.getGroup());
+List<Group> groups = new LinkedList<>(currentUser.getGroup());
+List<GroupDataDto> result = new LinkedList<>();
 
+        for (Group group: groups
+             ) {
+            List<ChatMessage> msgs = messageService.getGeneralMessage(group.getName());
 
-        return groups;
+            if (msgs != null && msgs.size() > 0) {
+                result.add(new GroupDataDto(group.getName(),msgs.get(msgs.size()-1).getMessage(),msgs.get(msgs.size()-1).getFrom()));
+            }else {
+                result.add(new GroupDataDto(group.getName(),"",""));
+
+            }
+        }
+
+return result ;
 
     }
 

@@ -4,6 +4,7 @@ import com.justchat.demo.dto.CustomUserDto;
 import com.justchat.demo.entity.ChatMessage;
 import com.justchat.demo.entity.CustomUser;
 import com.justchat.demo.entity.Group;
+import com.justchat.demo.repository.ChatMessageRepository;
 import com.justchat.demo.repository.CustomUserRepository;
 import com.justchat.demo.repository.GroupRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +26,8 @@ public class GroupService {
 
     @Autowired
     GroupRepository groupRepository;
+    @Autowired
+    ChatMessageRepository messageRepository;
 
     @Transactional
     public void createGroup(String groupName, String users, String loginCurrentUser) {
@@ -204,5 +207,12 @@ public class GroupService {
         groupRepository.save(group);
 
         return group;
+    }
+
+    @Transactional
+    public void clearNotificationInGroup(String groupName) {
+
+    messageRepository.deleteAllByToAndMessage(groupName,"Нове повідомлення");
+
     }
 }

@@ -42,10 +42,14 @@ public class GroupController {
 
 
     @RequestMapping(value = "/get-all-groups", method = RequestMethod.POST)
-    public Set<Group> getAllUsers() {
+    public List<GroupDataDto> getAllGroups() {
 
         CustomUser currentUser = userService.getUserByLogin(getLoginCurrentUser());
-        return userService.getSavedGroups(currentUser);
+if (currentUser==null){
+    return null;
+}
+        List<GroupDataDto> groups = userService.getSavedGroups(currentUser);
+        return  groups;
 
     }
 
@@ -125,8 +129,19 @@ public class GroupController {
     }
 
 
+/*
+    @RequestMapping(value = "/clear-notification-in-group", method = RequestMethod.POST)
+    public String clearNotificationInGroup(@RequestBody GroupDataDto groupData) {
 
 
+groupService.clearNotificationInGroup(groupData.getGroupName());
+        return "OK";
+
+
+
+
+    }
+*/
     private String getLoginCurrentUser() {
         Authentication loggedInUser = SecurityContextHolder.getContext().getAuthentication();
         String login = loggedInUser.getName();

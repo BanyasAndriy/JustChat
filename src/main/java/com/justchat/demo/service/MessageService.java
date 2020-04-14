@@ -69,10 +69,23 @@ CustomUser newMessageBot=null;
         ChatMessage msg = null;
         ChatMessage newMessageNotification = null;
         if (messageStatus.equals(MessageStatus.publicMessage)) {
-            group = groupService.findGroupByName(to);
-            msg = new ChatMessage(message, to, currentUser, messageStatus, group);
-            if (group != null)
-                group.addToChats(msg);
+
+
+
+             group = groupService.findGroupByName(to);
+
+            if (chatMessageRepository.findByTo(to).stream().anyMatch(chatMessage -> chatMessage.getMessage().equals("Нове повідомлення"))) {
+                msg = new ChatMessage(message, to, currentUser, messageStatus, group);
+                if (group != null)
+                    group.addToChats(msg);
+            }else {
+                newMessageNotification = new ChatMessage("Нове повідомлення", to, currentUser, messageStatus);
+                msg = new ChatMessage(message, to, currentUser, messageStatus);
+                if (group!=null){
+                    group.addToChats(newMessageNotification);
+                    group.addToChats(msg);
+                }
+            }
         } else {
 
 
@@ -81,11 +94,11 @@ CustomUser newMessageBot=null;
                 msg = new ChatMessage(message, to, currentUser, messageStatus);
             } else {
 
-              //  newMessageBot = new CustomUser("newMessageBot");
+
                 newMessageNotification = new ChatMessage("Нове повідомлення", to, currentUser, messageStatus);
                 msg = new ChatMessage(message, to, currentUser, messageStatus);
 
-             //   customUserRepository.save(newMessageBot);
+
             }
 
 
